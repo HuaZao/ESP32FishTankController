@@ -36,11 +36,12 @@ void WiFiEvent(WiFiEvent_t event)
   switch (event)
   {
   case SYSTEM_EVENT_STA_GOT_IP:
-    ntpClient.begin();
-    ntpClient.update();
     Serial.println("WiFi connected");
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
+    ntpClient.begin();
+    ntpClient.update();
+    Serial.println("获取网络时间成功:" + ntpClient.getFormattedTime());
     connectToMqtt();
     initWebService();
     break;
@@ -201,27 +202,28 @@ void sendMqttDataTask(void *arg)
 }
 
 void initWebService()
-{
+{    
   indexPage();
   jsonGetApi();
   jsonUpdataApi();
   ElegantOTA.begin(&server);
   server.begin();
+  Serial.println("HTTP 服务已经启动~");
   sc_send("ESP鱼缸启动成功");
 }
 
 void sc_send(String message)
 {
   //PDU23935TXd5sxyNlBZ9bvze0OSMTb9EKn8febs4P
-  String serverUrl = "https://api2.pushdeer.com/message/push?pushkey=" + StoreDataStruct.pushKey;
-  serverUrl += "&text="+ message + "&type=text";
-  HTTPClient http;
-  http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-  http.begin(serverUrl);
-  int httpCode = http.GET();
-  if (httpCode == HTTP_CODE_OK)
-  {
-    sendMessage = alertMessage;
-  }
-  http.end();
+  // String serverUrl = "https://api2.pushdeer.com/message/push?pushkey=PDU23935TXd5sxyNlBZ9bvze0OSMTb9EKn8febs4P" + StoreDataStruct.pushKey;
+  // serverUrl += "&text="+ message + "&type=text";
+  // HTTPClient http;
+  // http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+  // http.begin(serverUrl);
+  // int httpCode = http.GET();
+  // if (httpCode == HTTP_CODE_OK)
+  // {
+  //   sendMessage = alertMessage;
+  // }
+  // http.end();
 }

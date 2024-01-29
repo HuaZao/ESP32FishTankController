@@ -4,20 +4,21 @@ void ESP_GPIO_init(void);
 
 void setup(){
   Serial.begin(115200);
+  Serial.printf("Runing......OK!");
   //初始化IO
   ESP_GPIO_init();
   //初始化储存
   initStore();
   //初始化本地服务
   setupService();
-  //监听任务
+  // //监听任务
   xTaskCreate(monitorMainTask, "monitor_Main_Task", 4096, NULL, 3, NULL); 
   //传感器采集
   xTaskCreate(gatherSensorTask, "gather_Sensor_Task", 2048, NULL, 1, NULL); 
   //LED任务
   xTaskCreatePinnedToCore(core1LedPwmTask, "led_Task", 4096 , NULL, 1, &LedTask, 1);
   //发送MQTT数据
-  xTaskCreate(sendMqttDataTask, "send_Mqtt_Data_Task", 2048 , NULL, 3, NULL); 
+  xTaskCreate(sendMqttDataTask, "send_Mqtt_Data_Task", 4096 , NULL, 3, NULL); 
 }
 
 void ESP_GPIO_init(void)

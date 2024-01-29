@@ -40,8 +40,8 @@ void initStore()
     else
     {
         ESP_LOGE("ConfigDataStruct", "开始格式化LittleFS......");
-        LittleFS.format();
-        ESP.restart();
+        // LittleFS.format();
+        // ESP.restart();
     }
 }
 

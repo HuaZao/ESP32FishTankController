@@ -14,8 +14,8 @@
 // #define SCL_PIN 22
 
 //WIFI
-#define WIFI_SSID "Mesh_AP"
-#define WIFI_PASSWORD "23333333"
+#define WIFI_SSID "Wokwi-GUEST"
+#define WIFI_PASSWORD ""
 #define MQTT_HOST IPAddress(192, 168, 10, 203)
 #define MQTT_PORT 1883
 

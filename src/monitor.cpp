@@ -182,8 +182,8 @@ void monitorAlert()
     Serial.print("当前故障:");
     Serial.println(alertMessage);
     if (sendMessage != alertMessage)
-    {
-      //   sc_send(alertMessage);
+    {    
+        sc_send(alertMessage);
     }
   }
   else
