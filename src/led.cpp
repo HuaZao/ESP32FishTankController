@@ -31,7 +31,7 @@ void startPreModel()
 void ledProgress()
 {
     int pwmCount = 0;
-    if (StoreDataStruct.isEnableLedSunTime == 999){
+    if (StoreDataStruct.isEnableLedSunTime == 0){
         for (int i = 0; i < LED_Channel; i++)
         {
             Serial.println("当前通道: " + String(i) + "PWM: " + String(StoreDataStruct.rgbwu[i]));
