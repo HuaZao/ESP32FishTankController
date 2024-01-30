@@ -69,7 +69,7 @@ void reloadConfig(JsonObject &root)
         }
     }
     ESP_LOGI("ConfigDataStruct", "Reload Config Success");
-    serializeJsonPretty(root, Serial);
+    // serializeJsonPretty(root, Serial);
 }
 
 void updateConfig(Config_DataStruct_t data)

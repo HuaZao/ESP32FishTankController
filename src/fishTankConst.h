@@ -1,6 +1,8 @@
 #ifndef FINSH_TANK_CONST_H
 #define FINSH_TANK_CONST_H
 
+#define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
+
 // 仅第一次需要初始化文件系统
 #define FORMAT_FILESYSTEM false
 
@@ -14,8 +16,8 @@
 // #define SCL_PIN 22
 
 //WIFI
-#define WIFI_SSID "Wokwi-GUEST"
-#define WIFI_PASSWORD ""
+#define WIFI_SSID "Mesh_AP"
+#define WIFI_PASSWORD "23333333"
 #define MQTT_HOST IPAddress(192, 168, 10, 203)
 #define MQTT_PORT 1883
 

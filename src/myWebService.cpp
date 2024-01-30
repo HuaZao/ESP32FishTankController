@@ -1,6 +1,8 @@
 #include "myWebService.h"
 #include "led.h"
-// #include "sensor.h"
+#include "esp_wifi.h"
+#include "esp_event.h"
+#include "esp_log.h"
 
 #include <WiFi.h>
 #include <AsyncMqttClient.h>
@@ -9,87 +11,60 @@
 #include <ElegantOTA.h>
 #include <WiFiClient.h>
 #include <LittleFS.h>
+#include <ESPAsyncWiFiManager.h>
 
-xSemaphoreHandle WebServiceSemaphoreHandle;
-TimerHandle_t mqttReconnectTimer;
-TimerHandle_t wifiReconnectTimer;
+static const char* TAG = "service_Log";   
+
+extern xSemaphoreHandle SemaphoreHandle;
+
+char mqtt_server[40];
+char mqtt_port[6] = "1883";
 
 AsyncMqttClient mqttClient;
 AsyncWebServer server(80);
-void initWebService();
+DNSServer dns;
+WiFiUDP udp;
+NTPClient ntpClient(udp, "ntp1.aliyun.com", 8 * 3600); // 中国时间
 
-void connectToWifi()
-{
-  Serial.println("Connecting to Wi-Fi...");
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-}
+bool shouldSaveConfig = false;
+
+void initWebService();
 
 void connectToMqtt()
 {
-  Serial.println("Connecting to MQTT...");
+  ESP_LOGI(TAG,"Connecting to MQTT...");
   mqttClient.connect();
-}
-
-void WiFiEvent(WiFiEvent_t event)
-{
-  Serial.printf("[WiFi-event] event: %d\n", event);
-  switch (event)
-  {
-  case SYSTEM_EVENT_STA_GOT_IP:
-    Serial.println("WiFi connected");
-    Serial.println("IP address: ");
-    Serial.println(WiFi.localIP());
-    ntpClient.begin();
-    ntpClient.update();
-    Serial.println("获取网络时间成功:" + ntpClient.getFormattedTime());
-    connectToMqtt();
-    initWebService();
-    break;
-  case SYSTEM_EVENT_STA_DISCONNECTED:
-    Serial.println("WiFi lost connection");
-    xTimerStop(mqttReconnectTimer, 0);
-    xTimerStart(wifiReconnectTimer, 0);
-    break;
-  }
 }
 
 void onMqttConnect(bool sessionPresent)
 {
-  Serial.println("Connected to MQTT.");
-  Serial.print("Session present: ");
-  Serial.println(sessionPresent);
+  ESP_LOGI(TAG,"Connected to MQTT Session present:%d",sessionPresent);
   mqttClient.subscribe(MQTT_UPDATE_STORE_TOPIC, 2);
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason)
 {
-  Serial.println("Disconnected from MQTT.");
+  ESP_LOGI(TAG,"Disconnected from MQTT.");
   if (WiFi.isConnected())
   {
-    xTimerStart(mqttReconnectTimer, 0);
+    mqttClient.connect();
   }
 }
 
 void onMqttSubscribe(uint16_t packetId, uint8_t qos)
 {
-  Serial.println("Subscribe acknowledged.");
-  Serial.print("  packetId: ");
-  Serial.println(packetId);
-  Serial.print("  qos: ");
-  Serial.println(qos);
+  ESP_LOGI(TAG,"Subscribe packetId:%d  qos:%d",packetId,qos);
 }
 
 void onMqttUnsubscribe(uint16_t packetId)
 {
-  Serial.println("Unsubscribe acknowledged.");
-  Serial.print("  packetId: ");
-  Serial.println(packetId);
+  ESP_LOGI(TAG,"Unsubscribe packetId:%d",packetId);
 }
 
 void onMqttMessage(char *topic, char *payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total)
 {
-  Serial.println("Publish received.");
   String payloadStr = String(payload);
+  ESP_LOGI(TAG,"Publish received payload:%s",payloadStr);
   DynamicJsonDocument doc(4096);
   deserializeJson(doc, payloadStr);
   JsonObject obj = doc.as<JsonObject>();
@@ -103,39 +78,19 @@ void onMqttMessage(char *topic, char *payload, AsyncMqttClientMessageProperties 
 
 void onMqttPublish(uint16_t packetId)
 {
-  Serial.println("Publish acknowledged.");
-  Serial.print("  packetId: ");
-  Serial.println(packetId);
+  ESP_LOGI(TAG,"Publish packetId:%d",packetId);
 }
 
 void publishMessage(const char *topic, const String &payload)
 {
-  // 使用 AsyncMqttClient 提供的 publish 函数发布消息
-  // 第一个参数是主题，第二个参数是消息内容
-  // 第三个参数是 QoS（服务质量），这里使用 QoS 1
-  // 第四个参数是是否保留消息，这里不保留
   mqttClient.publish(topic, 1, false, payload.c_str());
-  Serial.println("Published message to topic: " + String(topic) + ", Payload: " + payload);
+  ESP_LOGI(TAG,"Published message to topic:%s  Payload:%s",String(topic),payload.c_str());
 }
 
-void connectService()
-{
-  mqttReconnectTimer = xTimerCreate("mqttTimer", pdMS_TO_TICKS(2000), pdFALSE, (void *)0, reinterpret_cast<TimerCallbackFunction_t>(connectToMqtt));
-  wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void *)0, reinterpret_cast<TimerCallbackFunction_t>(connectToWifi));
-  WiFi.onEvent(WiFiEvent);
-  mqttClient.onConnect(onMqttConnect);
-  mqttClient.onDisconnect(onMqttDisconnect);
-  mqttClient.onSubscribe(onMqttSubscribe);
-  mqttClient.onUnsubscribe(onMqttUnsubscribe);
-  mqttClient.onMessage(onMqttMessage);
-  mqttClient.onPublish(onMqttPublish);
-  mqttClient.setServer(MQTT_HOST, MQTT_PORT);
-  connectToWifi();
-}
 
 void indexPage()
 {
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+  server.on("/web", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(LittleFS, "/index.html", "text/html"); });
 }
 
@@ -156,6 +111,7 @@ void jsonUpdataApi()
   } });
 }
 
+
 void jsonGetApi()
 {
   server.on("/api/data", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -169,35 +125,56 @@ void jsonGetApi()
        request->send(200, "application/json", "{\"msg\":\"success\"}"); });
 }
 
+void saveConfigCallback () {
+  shouldSaveConfig = true;
+}
+
 void setupService()
 {
-  mqttReconnectTimer = xTimerCreate("mqttTimer", pdMS_TO_TICKS(2000), pdFALSE, (void *)0, reinterpret_cast<TimerCallbackFunction_t>(connectToMqtt));
-  wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void *)0, reinterpret_cast<TimerCallbackFunction_t>(connectToWifi));
-  WiFi.onEvent(WiFiEvent);
-  mqttClient.onConnect(onMqttConnect);
-  mqttClient.onDisconnect(onMqttDisconnect);
-  mqttClient.onSubscribe(onMqttSubscribe);
-  mqttClient.onUnsubscribe(onMqttUnsubscribe);
-  mqttClient.onMessage(onMqttMessage);
-  mqttClient.onPublish(onMqttPublish);
-  mqttClient.setServer(MQTT_HOST, MQTT_PORT);
-  connectToWifi();
+  AsyncWiFiManager wifiManager(&server, &dns);
+  wifiManager.setDebugOutput(false);
+  wifiManager.setSaveConfigCallback(saveConfigCallback);
+  wifiManager.setTimeout(180);
+  AsyncWiFiManagerParameter custom_mqtt_server("server", "mqtt server", mqtt_server, 40);
+  AsyncWiFiManagerParameter custom_mqtt_port("port", "mqtt port", mqtt_port, 5);
+  wifiManager.addParameter(&custom_mqtt_server);
+  wifiManager.addParameter(&custom_mqtt_port);
+  if(!wifiManager.autoConnect("FishController_AP")) {
+    Serial.println("failed to connect and hit timeout");
+    delay(3000);
+    // ESP.restart();
+  }
+  //获取自定义的数据
+  strcpy(mqtt_server, custom_mqtt_server.getValue());
+  strcpy(mqtt_port, custom_mqtt_port.getValue());
+  if (shouldSaveConfig) {
+
+  }
+  ESP_LOGI(TAG,"WiFi connected IP:%s",WiFi.localIP().toString().c_str());
+  ntpClient.begin();
+  ntpClient.update();
+  if(ntpClient.isTimeSet())
+  {
+      ESP_LOGI(TAG,"获取网络时间成功:%s",ntpClient.getFormattedTime());
+  }
+  // connectToMqtt();
+  initWebService();
 }
 
 void sendMqttDataTask(void *arg)
 {
   vTaskDelay(3000 / portTICK_PERIOD_MS);
-  xSemaphoreGive(WebServiceSemaphoreHandle);
+  xSemaphoreGive(SemaphoreHandle);
   for (;;)
   {
-    if (xSemaphoreTake(WebServiceSemaphoreHandle, portMAX_DELAY) == pdTRUE)
+    if (xSemaphoreTake(SemaphoreHandle, portMAX_DELAY) == pdTRUE)
     {
       if (mqttClient.connected())
       {
         publishMessage(MQTT_SEND_STORE_TOPIC, storeJsonString());
+        vTaskDelay(3000 / portTICK_PERIOD_MS);
       }
     }
-    vTaskDelay(3000);
   }
 }
 
@@ -208,7 +185,7 @@ void initWebService()
   jsonUpdataApi();
   ElegantOTA.begin(&server);
   server.begin();
-  Serial.println("HTTP 服务已经启动~");
+  ESP_LOGI(TAG,"HTTP 服务已经启动~");
   sc_send("ESP鱼缸启动成功");
 }
 

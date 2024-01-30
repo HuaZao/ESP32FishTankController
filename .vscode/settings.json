@@ -10,6 +10,10 @@
         "initializer_list": "cpp",
         "regex": "cpp",
         "*.tcc": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "blufi.h": "c",
+        "esp_blufi_api.h": "c",
+        "nvs_flash.h": "c",
+        "main.h": "c"
     }
 }

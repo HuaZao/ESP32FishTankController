@@ -1,9 +1,7 @@
 #include "led.h"
-
-xSemaphoreHandle LedSemaphoreHandle;
+extern xSemaphoreHandle SemaphoreHandle;
 TaskHandle_t LedTask;
-WiFiUDP udp;
-NTPClient ntpClient(udp, "ntp1.aliyun.com", 8 * 3600); // 中国时间
+
 
 // 当前时间(小时)
 int currentHour;
@@ -23,7 +21,7 @@ void setPWMPercentage(int pwmChannel, int percentage)
 
 void startPreModel()
 {
-    Serial.println("进入预览模式!");
+    ESP_LOGI("LedProgress","进入预览模式!");
     currentPreCount = -1;
     isPreModel = true;
 }
@@ -34,7 +32,7 @@ void ledProgress()
     if (StoreDataStruct.isEnableLedSunTime == 0){
         for (int i = 0; i < LED_Channel; i++)
         {
-            Serial.println("当前通道: " + String(i) + "PWM: " + String(StoreDataStruct.rgbwu[i]));
+            ESP_LOGI("LedProgress", "当前通道: %d%-PWM: %d", i, StoreDataStruct.rgbwu[i]);
             setPWMPercentage(i, StoreDataStruct.rgbwu[i]);
             pwmCount = pwmCount + StoreDataStruct.rgbwu[i];
         }
@@ -46,7 +44,7 @@ void ledProgress()
             {
                 isPreModel = false;
                 currentPreCount = -1;
-                Serial.print("预览结束.....");
+                ESP_LOGI("LedProgress", "预览结束.....");
             }
         }else{
             if (!ntpClient.isTimeSet()){
@@ -75,7 +73,7 @@ void ledProgress()
         if (isPreModel){
             progress = 1;
         }
-        ESP_LOGI("LedProgress", "当前区间进度: %s%", String(progress * 100.00));
+        ESP_LOGI("LedProgress", "当前区间进度: %s %", String(progress * 100.00));
         //根据 当前时间进度,开始,结束 计数出当前的PWM亮度
         for (int i = 0; i < LED_Channel; i++){
             int currentBrightness = 0;
@@ -109,10 +107,14 @@ void ledProgress()
 
 void core1LedPwmTask(void *parameter)
 {
-    Serial.println("LED线程启动.....");
+    vTaskDelay(3000 / portTICK_PERIOD_MS); 
+    xSemaphoreGive(SemaphoreHandle);
     for (;;)
     {
-        ledProgress();
-        delay(1000);
+        if (xSemaphoreTake(SemaphoreHandle, portMAX_DELAY) == pdTRUE) 
+        {
+            ledProgress();
+            vTaskDelay(3000 / portTICK_PERIOD_MS);
+        }
     }
 }

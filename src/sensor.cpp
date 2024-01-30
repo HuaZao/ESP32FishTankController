@@ -2,24 +2,23 @@
 #include "sensor.h"
 #include <LittleFS.h>
 
-int avgStoreTS = 0;    
-int sampleStoreTS = 0; 
-float TS = 0.0000;    
-float TSlog = 0.0000;  
+int avgStoreTS = 0;
+int sampleStoreTS = 0;
+float TS = 0.0000;
+float TSlog = 0.0000;
 
-xSemaphoreHandle SensorSemaphoreHandle;
-DataStruct_t SensorDataStruct; 
+extern xSemaphoreHandle SemaphoreHandle;
+DataStruct_t SensorDataStruct;
 
 void printData(DataStruct_t data)
 {
-    ESP_LOGI("SensorData", "****************************************************");
-    ESP_LOGI("DataStruct", "温度: %f °C", data.TemperatureData);
-    ESP_LOGI("DataStruct", "鱼缸水位状态: %f °C", data.Water_FinshTank_In);
-    ESP_LOGI("DataStruct", "废水水位状态: %f °C", data.Water_FinshTank_Out);
-    ESP_LOGI("DataStruct", "海水水位状态: %f °C", data.Water_FinshTank_Salt);
-    ESP_LOGI("DataStruct", "内部浮阀状态: %f °C", data.Water_FinshTank_Alert);
+  ESP_LOGI("SensorData", "****************************************************");
+  ESP_LOGI("DataStruct", "温度: %f °C", data.TemperatureData);
+  ESP_LOGI("DataStruct", "鱼缸水位状态: %d", data.Water_FinshTank_In);
+  ESP_LOGI("DataStruct", "废水水位状态: %d", data.Water_FinshTank_Out);
+  ESP_LOGI("DataStruct", "海水水位状态: %d", data.Water_FinshTank_Salt);
+  ESP_LOGI("DataStruct", "内部浮阀状态: %d", data.Water_FinshTank_Alert);
 }
-
 
 void readWaterSensor()
 {
@@ -32,7 +31,7 @@ void readWaterSensor()
 void readTemperatureSensor()
 {
   if (avgStoreTS <= 5)
-  { 
+  {
     TS = TS + analogRead(ntc_pin);
     sampleStoreTS++;
   }
@@ -48,16 +47,16 @@ void readTemperatureSensor()
 
 void gatherSensorTask(void *arg)
 {
-    vTaskDelay(3000 / portTICK_PERIOD_MS); 
-    xSemaphoreGive(SensorSemaphoreHandle);
-    for (;;)
+  vTaskDelay(3000 / portTICK_PERIOD_MS);
+  xSemaphoreGive(SemaphoreHandle);
+  for (;;)
+  {
+    if (xSemaphoreTake(SemaphoreHandle, portMAX_DELAY) == pdTRUE)
     {
-        if (xSemaphoreTake(SensorSemaphoreHandle, portMAX_DELAY) == pdTRUE)
-        {
-            readTemperatureSensor();
-            readWaterSensor();
-            printData(SensorDataStruct);
-        }
-        vTaskDelay(1000);
+      readTemperatureSensor();
+      readWaterSensor();
+      printData(SensorDataStruct);
+      vTaskDelay(3000 / portTICK_PERIOD_MS);
     }
+  }
 }

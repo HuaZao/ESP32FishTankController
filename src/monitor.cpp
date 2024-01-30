@@ -1,6 +1,6 @@
 #include "monitor.h"
 
-xSemaphoreHandle monitorSemaphoreHandle;
+extern xSemaphoreHandle SemaphoreHandle;
 
 unsigned long pumpStartTime = 0;                   // 记录水泵启动的时间
 unsigned long pumpTimeout = 10000;                 // 补水超时时间，单位：毫秒
@@ -194,12 +194,11 @@ void monitorAlert()
 
 void monitorMainTask(void *arg)
 {
-
   vTaskDelay(3000 / portTICK_PERIOD_MS); // 设置完成后要有一段延迟
-  xSemaphoreGive(monitorSemaphoreHandle);       // 发送一个信号量更新数据
+  xSemaphoreGive(SemaphoreHandle);       // 发送一个信号量更新数据
   for (;;)
   {
-    if (xSemaphoreTake(monitorSemaphoreHandle, portMAX_DELAY) == pdTRUE) // 等待信号量
+    if (xSemaphoreTake(SemaphoreHandle, portMAX_DELAY) == pdTRUE) // 等待信号量
     {
       // 监听水位
       monitorFishTankWaterLevel();
@@ -207,7 +206,7 @@ void monitorMainTask(void *arg)
       monitorWaterChange();
       // 监听故障
       monitorAlert();
+      vTaskDelay(3000 / portTICK_PERIOD_MS);
     }
-    vTaskDelay(1000);
   }
 }
