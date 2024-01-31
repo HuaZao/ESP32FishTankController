@@ -16,8 +16,8 @@
 // #define SCL_PIN 22
 
 //WIFI
-#define WIFI_SSID "Mesh_AP"
-#define WIFI_PASSWORD "23333333"
+#define WIFI_SSID "Xiaomi_C077"
+#define WIFI_PASSWORD "htsd8888"
 #define MQTT_HOST IPAddress(192, 168, 10, 203)
 #define MQTT_PORT 1883
 

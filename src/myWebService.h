@@ -8,10 +8,10 @@
 
 extern WiFiUDP udp;
 extern NTPClient ntpClient;
-extern AsyncWebServer server;
 
 void setupService();
 void sendMqttDataTask(void *arg); 
 void sc_send(String message);
+void initWebService();
 
 #endif

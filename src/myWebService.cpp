@@ -11,6 +11,7 @@
 #include <ElegantOTA.h>
 #include <WiFiClient.h>
 #include <LittleFS.h>
+#include <DNSServer.h>
 #include <ESPAsyncWiFiManager.h>
 
 static const char* TAG = "service_Log";   
@@ -90,7 +91,8 @@ void publishMessage(const char *topic, const String &payload)
 
 void indexPage()
 {
-  server.on("/web", HTTP_GET, [](AsyncWebServerRequest *request)
+  // server.serveStatic("/", LittleFS,"/").setDefaultFile("index.html");
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(LittleFS, "/index.html", "text/html"); });
 }
 
@@ -140,11 +142,11 @@ void setupService()
   wifiManager.addParameter(&custom_mqtt_server);
   wifiManager.addParameter(&custom_mqtt_port);
   if(!wifiManager.autoConnect("FishController_AP")) {
-    Serial.println("failed to connect and hit timeout");
+    ESP_LOGI(TAG,"failed to connect and hit timeout");
     delay(3000);
     // ESP.restart();
   }
-  //获取自定义的数据
+  // 获取自定义的数据
   strcpy(mqtt_server, custom_mqtt_server.getValue());
   strcpy(mqtt_port, custom_mqtt_port.getValue());
   if (shouldSaveConfig) {
@@ -158,7 +160,6 @@ void setupService()
       ESP_LOGI(TAG,"获取网络时间成功:%s",ntpClient.getFormattedTime());
   }
   // connectToMqtt();
-  initWebService();
 }
 
 void sendMqttDataTask(void *arg)
