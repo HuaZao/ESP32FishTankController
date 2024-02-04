@@ -16,8 +16,7 @@
         <ul class="layui-tab-title">
             <li class="layui-this"><i class="layui-icon layui-icon-console"></i> 鱼缸状态</li>
             <li><i class="layui-icon layui-icon-chart"></i> 灯光配置</li>
-            <li><i class="layui-icon layui-icon-water"></i> 换水配置</li>
-            <li><i class="layui-icon layui-icon-water"></i> 补水配置</li>
+            <li><i class="layui-icon layui-icon-water"></i> 换/补水配置</li>
             <li><i class="layui-icon layui-icon-set-sm"></i> 其他配置</li>
         </ul>
         <div class="layui-tab-content">
@@ -157,7 +156,7 @@
             </div>
 
             <div class="layui-tab-item">
-                <form class="layui-form" lay-filter="ledForm" action="" id='updateForm' style="height: 50px; width: 50%;">
+                <form class="layui-form" lay-filter="ledForm" action="" id='updateForm' style="padding: 16px;">
 
                     <div class="layui-form-item">
                         <label class="layui-form-label">LED通道</label>
@@ -171,16 +170,19 @@
                             </select>
                         </div>
                     </div>
-
+                    
+                    <div class="layui-form-item">
+                        <p></p>
+                    </div>
 
                     <div id="sun_led_controller_1" class="layui-form-item">
-                        <div class="layui-box" style="margin-left: 20px;position: relative; height:60vh; width:100vw">
+                        <div class="layui-box" style="position: relative; width:85vw">
                             <canvas id='myChart'></canvas>
                         </div>
                     </div>
 
                     <div id="sun_led_controller_0" class="layui-form-item">
-                        <div class="layui-box" style="margin-left: 38px;">
+                        <div class="layui-box" style="margin-left: 40px;">
                             <div style="height: 50px;" id="ID-slider-R-input"></div>
                             <div style="height: 50px;" id="ID-slider-G-input"></div>
                             <div style="height: 50px;" id="ID-slider-B-input"></div>
@@ -200,18 +202,45 @@
 
                     <div class="layui-form-item">
                         <div class="layui-input-block">
-                            <button class="layui-btn" style="width: 300px;" lay-submit
-                                lay-filter="formUpdate">保存</button>
+                            <button class="layui-btn" style="width: 80%;" lay-submit
+                                lay-filter="ledFormUpdate">保存</button>
                         </div>
                     </div>
 
                 </form>
 
             </div>
-            <div class="layui-tab-item">3</div>
-            <div class="layui-tab-item">4</div>
+
+            <div class="layui-tab-item">
+                <form class="layui-form" action="" lay-filter="addWatherForm" style="height: 50px; width: 50%;">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">补水开关</label>
+                      <div class="layui-input-block">
+                        <input type="checkbox" name="addWatherSwitch" lay-skin="switch" lay-filter="addWatherSwitch" title="ON|OFF">
+                      </div>
+                    </div>
+                
+                     <div class="layui-form-item">    
+                        <div class="layui-input-group" style="margin-left: 55px;">
+                          <div class=" layui-input-prefix">
+                            超时时间
+                          </div>
+                          <input type="text" name="addWatherTimeout" lay-affix="number" lay-verify="number" placeholder="请输入秒数" autocomplete="off" class="layui-input">
+                          <div class="layui-input-suffix">
+                            秒
+                          </div>
+                        </div>
+                      </div>
+
+                    <div class="layui-form-item">
+                      <div class="layui-input-block">
+                        <button type="submit" class="layui-btn" style="width: 80%;" lay-submit lay-filter="addWatherFormUpdate">保存</button>
+                      </div>
+                    </div>
+                  </form>
+
+            </div>
             <div class="layui-tab-item">5</div>
-            <div class="layui-tab-item">6</div>
         </div>
     </div>
 
@@ -226,6 +255,7 @@
 
     var jsonResponse = {
         "isEnableAddWather": 1,
+        "addWatherTimeout":10, 
         "ledChannelCount": 3,
         "isEnableWaterChanges": 1,
         "isEnableSunTime": 0,
@@ -484,10 +514,10 @@
             }
         });
 
-        form.on('submit(formUpdate)', function (data) {
+        form.on('submit(ledFormUpdate)', function (data) {
             console.log(JSON.stringify(data.field));
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/api/updata', true);
+            xhr.open('POST', '/api/updata/led', true);
             xhr.onreadystatechange = function () {
                 if (xhr.status === 200) {
                     layer.msg('保存成功!');
@@ -509,12 +539,17 @@
         // xhr.onload = function () {
         //     if (xhr.status === 200) {
         // jsonResponse = xhr.response;
-        // $("#ledChannel").val(jsonResponse.ledChannelCount);
+        //填充表单        
         var form = layui.form;
         layui.form.val("ledForm",{
             "ledChannel": jsonResponse.ledChannelCount,
             "ledModel":jsonResponse.isEnableSunTime
         });
+        layui.form.val("addWatherForm",{
+            "addWatherSwitch": jsonResponse.isEnableAddWather,
+            "addWatherTimeout":jsonResponse.addWatherTimeout
+        });
+        
         updateLedControllerModelVisibility(jsonResponse.isEnableSunTime);
         if (jsonResponse.isEnableSunTime == 1) {
             updateMyChartVisibility(jsonResponse.ledChannelCount);

@@ -1,5 +1,6 @@
 {
     "isEnableAddWather":0, 
+    "ledChannelCount":5,
     "addWatherTimeout":10, 
     "isEnableWaterChanges":0,
     "isEnableSunTime":0,
