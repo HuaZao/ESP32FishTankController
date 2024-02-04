@@ -3,6 +3,7 @@
 #include <LittleFS.h>
 #include "cJSON.h"
 
+
 Config_DataStruct_t StoreDataStruct;
 
 void initStore()
@@ -48,9 +49,10 @@ void initStore()
 void reloadConfig(JsonObject &root)
 {
     StoreDataStruct.isEnableAddWather = root["isEnableAddWather"];
+    StoreDataStruct.addWatherTimeout= root["addWatherTimeout"];
     StoreDataStruct.isEnableWaterChanges = root["isEnableWaterChanges"];
     StoreDataStruct.isEnableLedSunTime = root["isEnableSunTime"];
-    StoreDataStruct.TemperatureControlMode = root["TemperatureControlMode"];
+    StoreDataStruct.temperatureControlMode = root["temperatureControlMode"];
     StoreDataStruct.changesWaterTiming = root["changesWaterTiming"];
     StoreDataStruct.pushKey = root["pushKey"].as<String>();
     JsonArray rgbwuValues = root["rgbwu"];
@@ -82,9 +84,10 @@ void updateConfig(Config_DataStruct_t data)
     }
     DynamicJsonDocument doc(4096);
     doc["isEnableAddWather"] = data.isEnableAddWather;
+    doc["addWatherTimeout"] = data.addWatherTimeout;
     doc["isEnableWaterChanges"] = data.isEnableWaterChanges;
     doc["isEnableSunTime"] = data.isEnableLedSunTime;
-    doc["TemperatureControlMode"] = data.TemperatureControlMode;
+    doc["temperatureControlMode"] = data.temperatureControlMode;
     doc["changesWaterTiming"] = data.changesWaterTiming;
     doc["pushKey"] = data.pushKey;
 
@@ -118,13 +121,15 @@ void updateConfig(Config_DataStruct_t data)
 String storeJsonString(){
     DynamicJsonDocument doc(4096);
     doc["isEnableAddWather"] = StoreDataStruct.isEnableAddWather;
+    doc["addWatherTimeout"] = StoreDataStruct.addWatherTimeout;
     doc["isEnableWaterChanges"] = StoreDataStruct.isEnableWaterChanges;
     doc["isEnableSunTime"] = StoreDataStruct.isEnableLedSunTime;
-    doc["TemperatureControlMode"] = StoreDataStruct.TemperatureControlMode;
+    doc["temperatureControlMode"] = StoreDataStruct.temperatureControlMode;
     doc["changesWaterTiming"] = StoreDataStruct.changesWaterTiming;
     doc["changesWaterCount"] = StoreDataStruct.changesWaterCount;
     doc["temperature"] = SensorDataStruct.TemperatureData;
     doc["pushKey"] = StoreDataStruct.pushKey;
+
 
     JsonArray rgbuvArray = doc.createNestedArray("rgbuv");
     for (int i = 0; i < 5; i++)

@@ -2,17 +2,17 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layui/2.9.2/css/layui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layui/2.9.6/css/layui.min.css">
     <style>
         body {
-          background-color: white;
+            background-color: rgb(250, 250, 250);
         }
     </style>
 </head>
 
 <body>
     <H1 style="text-align: center;">ESP32-水族控制板V1.0</H1>
-    <div class="layui-tab layui-tab-brief">
+    <div class="layui-tab layui-tab-brief" lay-filter="main-tab">
         <ul class="layui-tab-title">
             <li class="layui-this"><i class="layui-icon layui-icon-console"></i> 鱼缸状态</li>
             <li><i class="layui-icon layui-icon-chart"></i> 灯光配置</li>
@@ -36,18 +36,55 @@
 
                         <div class="layui-col-sm3">
                             <div class="layui-card">
-                                <div class="layui-card-header layui-font-16" style="text-align: center;">最近补水时间</div>
+                                <div class="layui-card-header layui-font-16" style="text-align: center;">控制器时钟</div>
                                 <div class="layui-card-body">
                                     <H2 style="text-align: center;">2023-12-29</H2>
                                 </div>
                             </div>
                         </div>
 
+
                         <div class="layui-col-sm3">
                             <div class="layui-card">
-                                <div class="layui-card-header layui-font-16" style="text-align: center;">最近换水时间</div>
+                                <div class="layui-card-header layui-font-16" style="text-align: center;">电压</div>
                                 <div class="layui-card-body">
-                                    <H2 style="text-align: center;">2023-12-29 5L</H2>
+                                    <H2 style="text-align: center;">Nan</H2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-col-sm3">
+                            <div class="layui-card">
+                                <div class="layui-card-header layui-font-16" style="text-align: center;">电流</div>
+                                <div class="layui-card-body">
+                                    <H2 style="text-align: center;">Nan</H2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-col-sm3">
+                            <div class="layui-card">
+                                <div class="layui-card-header layui-font-16" style="text-align: center;">风扇功率</div>
+                                <div class="layui-card-body">
+                                    <H2 style="text-align: center;">50%</H2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-col-sm3">
+                            <div class="layui-card">
+                                <div class="layui-card-header layui-font-16" style="text-align: center;">水位状态</div>
+                                <div class="layui-card-body">
+                                    <H2 style="text-align: center;">正常</H2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-col-sm3">
+                            <div class="layui-card">
+                                <div class="layui-card-header layui-font-16" style="text-align: center;">下一次换水时间</div>
+                                <div class="layui-card-body">
+                                    <H2 style="text-align: center;">关闭</H2>
                                 </div>
                             </div>
                         </div>
@@ -57,7 +94,47 @@
                                 <div class="layui-card-header layui-font-16" style="text-align: center;">LED状态(RGBWU)
                                 </div>
                                 <div class="layui-card-body">
-                                    <H2 style="text-align: center;">10,20,30,40,50</H2>
+                                    <H2 style="text-align: center;">0,0,0,0,0</H2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-col-sm3">
+                            <div class="layui-card">
+                                <div class="layui-card-header layui-font-16" style="text-align: center;">LED模式
+                                </div>
+                                <div class="layui-card-body">
+                                    <H2 style="text-align: center;">日出日落</H2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-col-sm3">
+                            <div class="layui-card">
+                                <div class="layui-card-header layui-font-16" style="text-align: center;">MOS-1状态
+                                </div>
+                                <div class="layui-card-body">
+                                    <H2 style="text-align: center;">关闭</H2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-col-sm3">
+                            <div class="layui-card">
+                                <div class="layui-card-header layui-font-16" style="text-align: center;">MOS-2状态
+                                </div>
+                                <div class="layui-card-body">
+                                    <H2 style="text-align: center;">关闭</H2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-col-sm3">
+                            <div class="layui-card">
+                                <div class="layui-card-header layui-font-16" style="text-align: center;">MOS-3状态
+                                </div>
+                                <div class="layui-card-body">
+                                    <H2 style="text-align: center;">关闭</H2>
                                 </div>
                             </div>
                         </div>
@@ -65,7 +142,7 @@
                     </div>
                 </div>
 
-                <div class="layui-timeline" style="padding: 16px;">
+                <!-- <div class="layui-timeline" style="padding: 16px;">
                     <div class="layui-timeline-item">
                         <i class="layui-icon layui-timeline-axis"></i>
                         <div class="layui-timeline-content layui-text">
@@ -75,12 +152,27 @@
                             </p>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
             </div>
 
             <div class="layui-tab-item">
-                <form class="layui-form" action="" id='updateForm'>
+                <form class="layui-form" lay-filter="ledForm" action="" id='updateForm' style="height: 50px; width: 50%;">
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">LED通道</label>
+                        <div class="layui-input-block">
+                            <select name="ledChannel" lay-filter="led-Channel-value">
+                                <option value="1">W</option>
+                                <option value="2">WB</option>
+                                <option value="3">RGB</option>
+                                <option value="4">RGBW</option>
+                                <option value="5">RGBWU</option>
+                            </select>
+                        </div>
+                    </div>
+
+
                     <div id="sun_led_controller_1" class="layui-form-item">
                         <div class="layui-box" style="margin-left: 20px;position: relative; height:60vh; width:100vw">
                             <canvas id='myChart'></canvas>
@@ -89,19 +181,19 @@
 
                     <div id="sun_led_controller_0" class="layui-form-item">
                         <div class="layui-box" style="margin-left: 38px;">
-                            <div style="height: 50px; width: 50%;" id="ID-slider-R-input"></div>
-                            <div style="height: 50px; width: 50%;" id="ID-slider-G-input"></div>
-                            <div style="height: 50px; width: 50%;" id="ID-slider-B-input"></div>
-                            <div style="height: 50px; width: 50%;" id="ID-slider-W-input"></div>
-                            <div style="height: 50px; width: 50%;" id="ID-slider-U-input"></div>
+                            <div style="height: 50px;" id="ID-slider-R-input"></div>
+                            <div style="height: 50px;" id="ID-slider-G-input"></div>
+                            <div style="height: 50px;" id="ID-slider-B-input"></div>
+                            <div style="height: 50px;" id="ID-slider-W-input"></div>
+                            <div style="height: 50px;" id="ID-slider-U-input"></div>
                         </div>
                     </div>
 
                     <div class="layui-form-item">
                         <label class="layui-form-label">LED模式</label>
                         <div class="layui-input-block">
-                            <input type="radio" name="LEDMode" value="0" lay-filter="led-radio-filter" title="手动调节">
-                            <input type="radio" name="LEDMode" value="1" lay-filter="led-radio-filter" title="日出日落" checked>
+                            <input type="radio" name="ledModel" value="0" lay-filter="led-radio-filter" title="手动调节" checked>
+                            <input type="radio" name="ledModel" value="1" lay-filter="led-radio-filter" title="日出日落">
                         </div>
                     </div>
 
@@ -125,44 +217,21 @@
 
 </body>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/layui/2.9.2/layui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/layui/2.9.6/layui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-dragdata@2.2.4/dist/chartjs-plugin-dragdata.js"></script>
-
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 <script>
-    const currentDomain = window.location.hostname;
-
-    const socket = new WebSocket("ws://" + currentDomain + ":81");
-
-    // 监听连接打开事件
-    socket.addEventListener('open', (event) => {
-        console.log('WebSocket connection opened:', event);
-    });
-
-    // 监听消息事件
-    socket.addEventListener('message', (event) => {
-        console.log('WebSocket received message:', event.data);
-    });
-
-    // 监听连接关闭事件
-    socket.addEventListener('close', (event) => {
-        console.log('WebSocket connection closed:', event);
-    });
-
-    // 监听连接错误事件
-    socket.addEventListener('error', (event) => {
-        // layer.msg(event);
-        console.error('WebSocket connection error:', event);
-    });
 
     var jsonResponse = {
-        isEnableAddWather: 1,
-        isEnableWaterChanges: 1,
-        isEnableSunTime: 1,
-        TemperatureControlMode: 1,
-        changesWaterTiming: 0,
-        pwmValuesPerHour: [
+        "isEnableAddWather": 1,
+        "ledChannelCount": 3,
+        "isEnableWaterChanges": 1,
+        "isEnableSunTime": 0,
+        "TemperatureControlMode": 1,
+        "changesWaterTiming": 0,
+        "pwmValuesPerHour": [
             { "0": [0, 0, 0, 0, 0] },
             { "1": [0, 0, 0, 0, 0] },
             { "2": [0, 0, 0, 0, 0] },
@@ -191,24 +260,6 @@
         pushKey: ""
     };
     // var jsonResponse = {};
-    // 初始化数据集
-    var espDatasets = [
-        { label: 'R', data: [], borderWidth: 1, borderColor: 'red', fill: true },
-        { label: 'G', data: [], borderWidth: 1, borderColor: 'green', fill: true },
-        { label: 'B', data: [], borderWidth: 1, borderColor: 'blue', fill: true },
-        { label: 'W', data: [], borderWidth: 1, borderColor: 'white', fill: true },
-        { label: 'U', data: [], borderWidth: 1, borderColor: 'purple', fill: true }
-    ];
-
-    layui.use('slider', function () {
-        var slider = layui.slider;
-
-        //渲染
-        slider.render({
-            elem: '#slideTest1'  //绑定元素
-        });
-    });
-
     var ctx = document.getElementById('myChart').getContext('2d');
     var myChart = new Chart(ctx, {
         // plugins:[]
@@ -239,7 +290,7 @@
             },
             plugins: {
                 dragData: {
-                    round: 1,
+                    round: 0,
                     showTooltip: true,
                     onDragStart: function (e, datasetIndex, index, value) {
                         //   console.log(e)
@@ -250,9 +301,9 @@
                     },
                     onDragEnd: function (e, datasetIndex, index, value) {
                         e.target.style.cursor = 'default'
-                        espDatasets[datasetIndex].data[index] = value;
+                        // espDatasets[datasetIndex].data[index] = intValue;
                         jsonResponse.pwmValuesPerHour[index][String(index)][datasetIndex] = value;
-                        console.log(espDatasets);
+                        // console.log(espDatasets);
                         console.log(jsonResponse);
                     },
                 }
@@ -260,96 +311,177 @@
         },
     });
 
-
-    function requestData() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', currentDomain + '/api/data', true);
-        // xhr.responseType = 'json';
-        // xhr.onload = function () {
-        //     if (xhr.status === 200) {
-                // jsonResponse = xhr.response;
-                // 遍历pwmValuesPerHour中的每个对象
-                jsonResponse.pwmValuesPerHour.forEach(entry => {
-                    // 获取每个对象的第一个值
-                    const values = Object.values(entry)[0];
-                    // 将值添加到对应的数据集
-                    values.forEach((value, index) => {
-                        espDatasets[index].data.push(value);
-                    });
-                });
-                myChart.data.datasets = espDatasets;
-                myChart.update();
-            if(jsonResponse.isEnableSunTime == 1){
-                document.getElementById('sun_led_controlle_0').style.display = 'none';
-                document.getElementById('sun_led_controller_1').style.display = 'block';
-            }else{
-                document.getElementById('sun_led_controller_0').style.display = 'block';
-                document.getElementById('sun_led_controller_1').style.display = 'none';
-            }
-        //     } else {
-        //         console.error('Request failed with status:', xhr.status);
-        //     }
-        // };
-        // xhr.onerror = function () {
-        //     console.error('Network error occurred');
-        // };
-        // xhr.send();
+    function renderForm() {
+        layui.use('form', function () {
+            var form = layui.form;
+            form.render();
+        });
     }
 
-    requestData();
 
-    layui.use(function () {
-            var slider = layui.slider;
-            // 渲染
-            slider.render({
-                elem: '#ID-slider-R-input',
-                value: [0, 100],
-                input: true,
-                theme: 'red'
-            });
-            slider.render({
-                elem: '#ID-slider-G-input',
-                value: [0, 100],
-                input: true,
-                theme: 'green'
-            });
-            slider.render({
-                elem: '#ID-slider-B-input',
-                value: [0, 100],
-                input: true,
-                theme: 'blue'
-            });
-            slider.render({
-                elem: '#ID-slider-W-input',
-                value: [0, 100],
-                input: true,
-                theme: 'black' // 主题色
-            });
-            slider.render({
-                elem: '#ID-slider-U-input',
-                value: [0, 100],
-                input: true,
-                theme: 'purple' // 主题色
+    function updateMyChartVisibility(value) {
+        // 定义共享的属性
+        var sharedOptions = {
+            borderWidth: 1,
+            pointHitRadius: 25,
+            borderWidth: 3,
+            pointRadius: 3,
+            // tension: 0.4,
+            fill: true,
+
+        };
+
+        // 定义数据集
+        var espDatasets = [
+            { label: 'R', data: [], pointBackgroundColor: 'red', backgroundColor: 'rgba(255, 0, 0, 0.2)', borderColor: 'red', ...sharedOptions },
+            { label: 'G', data: [], pointBackgroundColor: 'green', backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green', ...sharedOptions },
+            { label: 'B', data: [], pointBackgroundColor: 'blue', backgroundColor: 'rgba(0, 0, 255, 0.2)', borderColor: 'blue', ...sharedOptions },
+            { label: 'W', data: [], pointBackgroundColor: 'rgba(0, 0, 0, 0.5)', backgroundColor: 'rgba(0, 0, 0, 0.2)', borderColor: 'rgba(0, 0, 0, 0.5)', ...sharedOptions },
+            { label: 'U', data: [], pointBackgroundColor: 'purple', backgroundColor: 'rgba(128, 0, 128, 0.2)', borderColor: 'purple', ...sharedOptions }
+        ];
+        // 遍历pwmValuesPerHour中的每个对象
+        jsonResponse.pwmValuesPerHour.forEach(entry => {
+            // 获取每个对象的第一个值
+            const values = Object.values(entry)[0];
+            // 将值添加到对应的数据集
+            values.forEach((value, index) => {
+                espDatasets[index].data.push(value);
             });
         });
+        if (value == 1) {
+            espDatasets = espDatasets.filter(function (dataset) {
+                return dataset.label == 'W';
+            });
+        }
+        if (value == 2) {
+            espDatasets = espDatasets.filter(function (dataset) {
+                return dataset.label == 'W' || dataset.label == 'B';
+            });
+        }
+        if (value == 3) {
+            espDatasets = espDatasets.filter(function (dataset) {
+                return dataset.label == 'R' || dataset.label == 'G' || dataset.label == 'B';
+            });
+        }
+        if (value == 4) {
+            espDatasets = espDatasets.filter(function (dataset) {
+                return dataset.label != 'U';
+            });
+        }
+        myChart.data.datasets = espDatasets;
+        myChart.update();
+    }
+
+    function updateLedControllerModelVisibility(value) {
+        if (value == 1) {
+            document.getElementById('sun_led_controller_1').style.display = 'block';
+            document.getElementById('sun_led_controller_0').style.display = 'none';
+        } else {
+            document.getElementById('sun_led_controller_0').style.display = 'block';
+            document.getElementById('sun_led_controller_1').style.display = 'none';
+        }
+    }
+
+    function updateSliderInputsVisibility(value) {
+        var sliders = ['ID-slider-R-input', 'ID-slider-G-input', 'ID-slider-B-input', 'ID-slider-W-input', 'ID-slider-U-input'];
+        sliders.forEach(function (sliderId) {
+            document.getElementById(sliderId).style.display = 'none';
+        });
+        var intValue = parseInt(value)
+        switch (intValue) {
+            case 1:
+                document.getElementById('ID-slider-W-input').style.display = 'block';
+                break;
+            case 2:
+                document.getElementById('ID-slider-B-input').style.display = 'block';
+                document.getElementById('ID-slider-W-input').style.display = 'block';
+                break;
+            case 3:
+                document.getElementById('ID-slider-R-input').style.display = 'block';
+                document.getElementById('ID-slider-G-input').style.display = 'block';
+                document.getElementById('ID-slider-B-input').style.display = 'block';
+                break;
+            case 4:
+                document.getElementById('ID-slider-R-input').style.display = 'block';
+                document.getElementById('ID-slider-G-input').style.display = 'block';
+                document.getElementById('ID-slider-B-input').style.display = 'block';
+                document.getElementById('ID-slider-W-input').style.display = 'block';
+                break;
+            case 5:
+                sliders.forEach(function (sliderId) {
+                    document.getElementById(sliderId).style.display = 'block';
+                });
+                break;
+            default:
+                // 默认情况，不做任何处理
+                break;
+        }
+    }
+
+
+
+    layui.use(function () {
+        var slider = layui.slider;
+        slider.render({
+            elem: '#ID-slider-R-input',
+            value: [0, 100],
+            input: true,
+            theme: 'red'
+        });
+        slider.render({
+            elem: '#ID-slider-G-input',
+            value: [0, 100],
+            input: true,
+            theme: 'green'
+        });
+        slider.render({
+            elem: '#ID-slider-B-input',
+            value: [0, 100],
+            input: true,
+            theme: 'blue'
+        });
+        slider.render({
+            elem: '#ID-slider-W-input',
+            value: [0, 100],
+            input: true,
+            theme: 'black' 
+        });
+        slider.render({
+            elem: '#ID-slider-U-input',
+            value: [0, 100],
+            input: true,
+            theme: 'purple' 
+        });
+
+        var element = layui.element;
+        element.on('tab(main-tab)', function (data) {
+            // requestData();
+        });
+
+    });
 
     layui.use('form', function () {
         var form = layui.form;
         var layer = layui.layer;
 
-        form.on('radio(led-radio-filter)', function (data) {
-            var elem = data.elem; // 获得 radio 原始 DOM 对象
-            var checked = elem.checked; // 获得 radio 选中状态
-            var value = elem.value; // 获得 radio 值
-            var othis = data.othis; // 获得 radio 元素被替换后的 jQuery 对象
-            if(value == 0){
-                document.getElementById('sun_led_controlle_0').style.display = 'none';
-                document.getElementById('sun_led_controller_1').style.display = 'block';
+        form.on('select(led-Channel-value)', function (data) {
+            var ledMode = form.val().ledModel;
+            if(ledMode == 0){
+                updateSliderInputsVisibility(data.value);
             }else{
-                document.getElementById('sun_led_controller_0').style.display = 'block';
-                document.getElementById('sun_led_controller_1').style.display = 'none';
+                updateMyChartVisibility(data.value);
             }
-            layer.msg(['value: ' + value, 'checked: ' + checked].join('<br>'));
+        });
+
+        form.on('radio(led-radio-filter)', function (data) {
+            var elem = data.elem;
+            var channel = form.val().ledChannel;
+            updateLedControllerModelVisibility(elem.value);
+            if(data.value == 0){
+                updateSliderInputsVisibility(channel);
+            }else{
+                updateMyChartVisibility(channel);
+            }
         });
 
         form.on('submit(formUpdate)', function (data) {
@@ -369,6 +501,38 @@
             return false;
         });
     });
+
+    function requestData() {
+        // var xhr = new XMLHttpRequest();
+        // xhr.open('GET','/api/data', true);
+        // xhr.responseType = 'json';
+        // xhr.onload = function () {
+        //     if (xhr.status === 200) {
+        // jsonResponse = xhr.response;
+        // $("#ledChannel").val(jsonResponse.ledChannelCount);
+        var form = layui.form;
+        layui.form.val("ledForm",{
+            "ledChannel": jsonResponse.ledChannelCount,
+            "ledModel":jsonResponse.isEnableSunTime
+        });
+        updateLedControllerModelVisibility(jsonResponse.isEnableSunTime);
+        if (jsonResponse.isEnableSunTime == 1) {
+            updateMyChartVisibility(jsonResponse.ledChannelCount);
+        } else {
+            updateSliderInputsVisibility(jsonResponse.ledChannelCount)
+        };
+        // renderForm();
+        //     } else {
+        //         console.error('Request failed with status:', xhr.status);
+        //     }
+        // };
+        // xhr.onerror = function () {
+        //     console.error('Network error occurred');
+        // };
+        // xhr.send();
+    }
+
+    requestData();
 
 </script>
 </body>

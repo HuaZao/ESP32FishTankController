@@ -91,7 +91,6 @@ void publishMessage(const char *topic, const String &payload)
 
 void indexPage()
 {
-  // server.serveStatic("/", LittleFS,"/").setDefaultFile("index.html");
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(LittleFS, "/index.html", "text/html"); });
 }

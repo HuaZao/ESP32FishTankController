@@ -14,7 +14,8 @@ bool isPreModel;
 void setPWMPercentage(int pwmChannel, int percentage)
 {
     // 将百分比映射到PWM值范围
-    int pwmValue = map(percentage, 0, 100, 0, 2 ^ pwm_freq_resolution);
+    int pwmValue = map(percentage, 0, 100, 0, 1024);
+    ESP_LOGI("LedProgress", "当前通道: %d%-PWM: %d", pwmChannel, pwmValue);
     // 设置PWM值
     ledcWrite(pwmChannel, pwmValue);
 }
@@ -32,7 +33,6 @@ void ledProgress()
     if (StoreDataStruct.isEnableLedSunTime == 0){
         for (int i = 0; i < LED_Channel; i++)
         {
-            ESP_LOGI("LedProgress", "当前通道: %d%-PWM: %d", i, StoreDataStruct.rgbwu[i]);
             setPWMPercentage(i, StoreDataStruct.rgbwu[i]);
             pwmCount = pwmCount + StoreDataStruct.rgbwu[i];
         }
@@ -94,7 +94,6 @@ void ledProgress()
             currentBrightness = constrain(currentBrightness, 0, 100);
             setPWMPercentage(i, currentBrightness);
             pwmCount = pwmCount + currentBrightness;
-            ESP_LOGI("LedProgress", "当前通道: %d%-PWM: %d", i, currentBrightness);
         }
     }  
     if (pwmCount > fan_start_count){

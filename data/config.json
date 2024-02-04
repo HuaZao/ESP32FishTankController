@@ -1,8 +1,9 @@
 {
-    "isEnableAddWather":1, 
-    "isEnableWaterChanges":1,
-    "isEnableSunTime":1,
-    "TemperatureControlMode":1,
+    "isEnableAddWather":0, 
+    "addWatherTimeout":10, 
+    "isEnableWaterChanges":0,
+    "isEnableSunTime":0,
+    "temperatureControlMode":0,
     "changesWaterTiming":0,
     "changesWaterCount":5,
     "pwmValuesPerHour":[
@@ -31,6 +32,6 @@
         {"22":[10,10,10,10,0]},
         {"23":[10,10,10,10,0]}
     ],
-    "rgbuv":[100,100,100,100,80],
+    "rgbuv":[50,50,50,50,50],
     "pushKey":"PDU23935TXd5sxyNlBZ9bvze0OSMTb9EKn8febs4P"
 }
