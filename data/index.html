@@ -574,6 +574,7 @@
             xhr.open('POST', '/api/updata', true);
             xhr.onreadystatechange = function () {
                 if (xhr.status === 200) {
+                    layer.close(loadIndex)
                     layer.msg('保存成功!');
                 }else{
                     layer.close(loadIndex)
