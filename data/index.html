@@ -28,7 +28,7 @@
                             <div class="layui-card">
                                 <div class="layui-card-header layui-font-16" style="text-align: center;">鱼缸当前温度</div>
                                 <div class="layui-card-body">
-                                    <H2 style="text-align: center;">0°</H2>
+                                    <H2 id="card-temperature" style="text-align: center;">Nan</H2>
                                 </div>
                             </div>
                         </div>
@@ -37,7 +37,7 @@
                             <div class="layui-card">
                                 <div class="layui-card-header layui-font-16" style="text-align: center;">控制器时钟</div>
                                 <div class="layui-card-body">
-                                    <H2 style="text-align: center;">2023-12-29</H2>
+                                    <H2 id="card-ntp" style="text-align: center;">Nan</H2>
                                 </div>
                             </div>
                         </div>
@@ -47,7 +47,7 @@
                             <div class="layui-card">
                                 <div class="layui-card-header layui-font-16" style="text-align: center;">电压</div>
                                 <div class="layui-card-body">
-                                    <H2 style="text-align: center;">Nan</H2>
+                                    <H2 id="card-voltage" style="text-align: center;">Nan</H2>
                                 </div>
                             </div>
                         </div>
@@ -56,7 +56,7 @@
                             <div class="layui-card">
                                 <div class="layui-card-header layui-font-16" style="text-align: center;">电流</div>
                                 <div class="layui-card-body">
-                                    <H2 style="text-align: center;">Nan</H2>
+                                    <H2 id="card-current"  style="text-align: center;">Nan</H2>
                                 </div>
                             </div>
                         </div>
@@ -65,7 +65,7 @@
                             <div class="layui-card">
                                 <div class="layui-card-header layui-font-16" style="text-align: center;">风扇功率</div>
                                 <div class="layui-card-body">
-                                    <H2 style="text-align: center;">50%</H2>
+                                    <H2 id="card-fan-power" style="text-align: center;">Nan</H2>
                                 </div>
                             </div>
                         </div>
@@ -74,7 +74,7 @@
                             <div class="layui-card">
                                 <div class="layui-card-header layui-font-16" style="text-align: center;">水位状态</div>
                                 <div class="layui-card-body">
-                                    <H2 style="text-align: center;">正常</H2>
+                                    <H2 id="card-win-lv" style="text-align: center;">Nan</H2>
                                 </div>
                             </div>
                         </div>
@@ -83,7 +83,7 @@
                             <div class="layui-card">
                                 <div class="layui-card-header layui-font-16" style="text-align: center;">下一次换水时间</div>
                                 <div class="layui-card-body">
-                                    <H2 style="text-align: center;">关闭</H2>
+                                    <H2 style="text-align: center;">Nan</H2>
                                 </div>
                             </div>
                         </div>
@@ -93,7 +93,7 @@
                                 <div class="layui-card-header layui-font-16" style="text-align: center;">LED状态(RGBWU)
                                 </div>
                                 <div class="layui-card-body">
-                                    <H2 style="text-align: center;">0,0,0,0,0</H2>
+                                    <H2 id="card-led-value" style="text-align: center;">Nan</H2>
                                 </div>
                             </div>
                         </div>
@@ -103,7 +103,7 @@
                                 <div class="layui-card-header layui-font-16" style="text-align: center;">LED模式
                                 </div>
                                 <div class="layui-card-body">
-                                    <H2 style="text-align: center;">日出日落</H2>
+                                    <H2 id="card-led-mode" style="text-align: center;">Nan</H2>
                                 </div>
                             </div>
                         </div>
@@ -113,7 +113,7 @@
                                 <div class="layui-card-header layui-font-16" style="text-align: center;">MOS-1状态
                                 </div>
                                 <div class="layui-card-body">
-                                    <H2 style="text-align: center;">关闭</H2>
+                                    <H2 id="card-mos1-value"style="text-align: center;">Nan</H2>
                                 </div>
                             </div>
                         </div>
@@ -123,7 +123,7 @@
                                 <div class="layui-card-header layui-font-16" style="text-align: center;">MOS-2状态
                                 </div>
                                 <div class="layui-card-body">
-                                    <H2 style="text-align: center;">关闭</H2>
+                                    <H2 id="card-mos2-value" style="text-align: center;">Nan</H2>
                                 </div>
                             </div>
                         </div>
@@ -133,7 +133,7 @@
                                 <div class="layui-card-header layui-font-16" style="text-align: center;">MOS-3状态
                                 </div>
                                 <div class="layui-card-body">
-                                    <H2 style="text-align: center;">关闭</H2>
+                                    <H2 id="card-mos3-value" style="text-align: center;">Nan</H2>
                                 </div>
                             </div>
                         </div>
@@ -156,7 +156,7 @@
             </div>
 
             <div class="layui-tab-item">
-                <form class="layui-form" lay-filter="ledForm" action="" id='updateForm' style="padding: 16px;">
+                <form class="layui-form" lay-filter="ledForm" action="" id='updateForm' style="padding-right: 40px;">
 
                     <div class="layui-form-item">
                         <label class="layui-form-label">LED通道</label>
@@ -176,18 +176,18 @@
                     </div>
 
                     <div id="sun_led_controller_1" class="layui-form-item">
-                        <div class="layui-box" style="position: relative; width:85vw">
+                        <div class="layui-box">
                             <canvas id='myChart'></canvas>
                         </div>
                     </div>
 
                     <div id="sun_led_controller_0" class="layui-form-item">
                         <div class="layui-box" style="margin-left: 40px;">
-                            <div style="height: 50px;" id="ID-slider-R-input"></div>
-                            <div style="height: 50px;" id="ID-slider-G-input"></div>
-                            <div style="height: 50px;" id="ID-slider-B-input"></div>
-                            <div style="height: 50px;" id="ID-slider-W-input"></div>
-                            <div style="height: 50px;" id="ID-slider-U-input"></div>
+                            <div style="height: 50px;" class="class-r-slider" id="ID-slider-R-input"></div>
+                            <div style="height: 50px;" class="class-g-slider" id="ID-slider-G-input"></div>
+                            <div style="height: 50px;" class="class-b-slider" id="ID-slider-B-input"></div>
+                            <div style="height: 50px;" class="class-w-slider" id="ID-slider-W-input"></div>
+                            <div style="height: 50px;" class="class-u-slider" id="ID-slider-U-input"></div>
                         </div>
                     </div>
 
@@ -199,12 +199,19 @@
                         </div>
                     </div>
 
-
                     <div class="layui-form-item">
+                        <label class="layui-form-label">温控模式</label>
                         <div class="layui-input-block">
-                            <button class="layui-btn" style="width: 80%;" lay-submit
-                                lay-filter="ledFormUpdate">保存</button>
+                          <input type="checkbox" name="fanAutoSwitch" lay-skin="switch" lay-filter="checkbox-fan-filter" title="自动|手动">
                         </div>
+                        <div class="layui-input-block">
+                            <div style="height: 50px; padding-top: 12px;" class="class-fan-slider" id="ID-slider-fan-input"></div>
+                        </div>
+                      </div>
+
+                    <div class="layui-form-item" style="padding-left: 40px;">
+                        <button class="layui-btn layui-btn-fluid" lay-submit
+                        lay-filter="ledFormUpdate">保存</button>
                     </div>
 
                 </form>
@@ -252,47 +259,54 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 <script>
+    var slider_r;
+    var slider_g;
+    var slider_b;
+    var slider_w;
+    var slider_u;
+    var slider_fan;
 
-    var jsonResponse = {
-        "isEnableAddWather": 1,
-        "addWatherTimeout":10, 
-        "ledChannelCount": 3,
-        "isEnableWaterChanges": 1,
-        "isEnableSunTime": 0,
-        "TemperatureControlMode": 1,
-        "changesWaterTiming": 0,
-        "pwmValuesPerHour": [
-            { "0": [0, 0, 0, 0, 0] },
-            { "1": [0, 0, 0, 0, 0] },
-            { "2": [0, 0, 0, 0, 0] },
-            { "3": [0, 0, 0, 0, 0] },
-            { "4": [0, 0, 0, 0, 0] },
-            { "5": [0, 0, 0, 0, 0] },
-            { "6": [0, 0, 0, 0, 0] },
-            { "7": [0, 0, 0, 0, 0] },
-            { "8": [0, 0, 0, 0, 0] },
-            { "9": [0, 0, 0, 0, 0] },
-            { "10": [20, 10, 30, 30, 30] },
-            { "11": [30, 30, 40, 30, 50] },
-            { "12": [50, 30, 100, 50, 50] },
-            { "13": [50, 30, 100, 100, 100] },
-            { "14": [50, 30, 80, 80, 80] },
-            { "15": [40, 30, 80, 80, 80] },
-            { "16": [30, 30, 60, 30, 50] },
-            { "17": [30, 30, 50, 30, 50] },
-            { "18": [30, 30, 40, 30, 50] },
-            { "19": [30, 30, 30, 30, 50] },
-            { "20": [30, 30, 30, 30, 50] },
-            { "21": [30, 30, 30, 30, 50] },
-            { "22": [10, 10, 10, 10, 10] },
-            { "23": [0, 0, 0, 0, 0] }
-        ],
-        pushKey: ""
-    };
-    // var jsonResponse = {};
+    // var jsonResponse = {
+    //     "isEnableAddWather": 1,
+    //     "addWatherTimeout":10, 
+    //     "fanPowerValue":50, 
+    //     "fanControlMode": 1,
+    //     "ledChannelCount": 3,
+    //     "isEnableWaterChanges": 1,
+    //     "isEnableSunTime": 0,
+    //     "changesWaterTiming": 0,
+    //     "pwmValuesPerHour": [
+    //         { "0": [0, 0, 0, 0, 0] },
+    //         { "1": [0, 0, 0, 0, 0] },
+    //         { "2": [0, 0, 0, 0, 0] },
+    //         { "3": [0, 0, 0, 0, 0] },
+    //         { "4": [0, 0, 0, 0, 0] },
+    //         { "5": [0, 0, 0, 0, 0] },
+    //         { "6": [0, 0, 0, 0, 0] },
+    //         { "7": [0, 0, 0, 0, 0] },
+    //         { "8": [0, 0, 0, 0, 0] },
+    //         { "9": [0, 0, 0, 0, 0] },
+    //         { "10": [20, 10, 30, 30, 30] },
+    //         { "11": [30, 30, 40, 30, 50] },
+    //         { "12": [50, 30, 100, 50, 50] },
+    //         { "13": [50, 30, 100, 100, 100] },
+    //         { "14": [50, 30, 80, 80, 80] },
+    //         { "15": [40, 30, 80, 80, 80] },
+    //         { "16": [30, 30, 60, 30, 50] },
+    //         { "17": [30, 30, 50, 30, 50] },
+    //         { "18": [30, 30, 40, 30, 50] },
+    //         { "19": [30, 30, 30, 30, 50] },
+    //         { "20": [30, 30, 30, 30, 50] },
+    //         { "21": [30, 30, 30, 30, 50] },
+    //         { "22": [10, 10, 10, 10, 10] },
+    //         { "23": [0, 0, 0, 0, 0] }
+    //     ],
+    //     "rgbwuv":[50,50,50,50,50],
+    //     pushKey: ""
+    // };
+    var jsonResponse = {};
     var ctx = document.getElementById('myChart').getContext('2d');
     var myChart = new Chart(ctx, {
-        // plugins:[]
         type: 'line',
         data: {
             labels: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"],
@@ -303,20 +317,11 @@
             interaction: {  // 设置每个点的交互
                 intersect: true,
             },
-            title: {
-                display: true,
-                text: "LED灯光设置"
-            },
             scales: {
                 y: {
                     min: 0,
                     max: 100
                 }
-            },
-            onHover: function (e) {
-                const point = e.chart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, false)
-                if (point.length) e.native.target.style.cursor = 'grab'
-                else e.native.target.style.cursor = 'default'
             },
             plugins: {
                 dragData: {
@@ -340,14 +345,6 @@
             }
         },
     });
-
-    function renderForm() {
-        layui.use('form', function () {
-            var form = layui.form;
-            form.render();
-        });
-    }
-
 
     function updateMyChartVisibility(value) {
         // 定义共享的属性
@@ -412,6 +409,16 @@
         }
     }
 
+
+    function updateLedFanModelVisibility(value) {
+        if (value == true) {
+            document.getElementById('ID-slider-fan-input').style.display = 'none';
+        } else {
+            document.getElementById('ID-slider-fan-input').style.display = 'block';
+        }
+    }
+
+
     function updateSliderInputsVisibility(value) {
         var sliders = ['ID-slider-R-input', 'ID-slider-G-input', 'ID-slider-B-input', 'ID-slider-W-input', 'ID-slider-U-input'];
         sliders.forEach(function (sliderId) {
@@ -448,54 +455,100 @@
         }
     }
 
-
-
-    layui.use(function () {
+    layui.use('slider',function () {
         var slider = layui.slider;
-        slider.render({
-            elem: '#ID-slider-R-input',
-            value: [0, 100],
+        slider_r = slider.render({
+            elem: '.class-r-slider',
+            min: 0,
+            max: 100,
             input: true,
-            theme: 'red'
-        });
-        slider.render({
-            elem: '#ID-slider-G-input',
-            value: [0, 100],
-            input: true,
-            theme: 'green'
-        });
-        slider.render({
-            elem: '#ID-slider-B-input',
-            value: [0, 100],
-            input: true,
-            theme: 'blue'
-        });
-        slider.render({
-            elem: '#ID-slider-W-input',
-            value: [0, 100],
-            input: true,
-            theme: 'black' 
-        });
-        slider.render({
-            elem: '#ID-slider-U-input',
-            value: [0, 100],
-            input: true,
-            theme: 'purple' 
+            theme: 'red',
+            done: function(value){
+                jsonResponse.rgbwuv[0] = value;
+            }
         });
 
-        var element = layui.element;
-        element.on('tab(main-tab)', function (data) {
-            // requestData();
+        slider_g = slider.render({
+            elem: '.class-g-slider',
+            min: 0,
+            max: 100,
+            input: true,
+            theme: 'green',
+            done: function(value){
+                jsonResponse.rgbwuv[1] = value;
+            }
         });
 
+        slider_b = slider.render({
+            elem: '.class-b-slider',
+            min: 0,
+            max: 100,
+            input: true,
+            theme: 'blue',
+            done: function(value){
+                jsonResponse.rgbwuv[2] = value;
+            }
+        });
+
+        slider_w = slider.render({
+            elem: '.class-w-slider',
+            min: 0,
+            max: 100,
+            input: true,
+            theme: 'black',
+            done: function(value){
+                jsonResponse.rgbwuv[3] = value;
+            }
+        });
+
+        slider_u = slider.render({
+            elem: '.class-u-slider',
+            min: 0,
+            max: 100,
+            input: true,
+            theme: 'purple',
+            done: function(value){
+                jsonResponse.rgbwuv[4] = value;
+            }
+        })
+
+        slider_fan = slider.render({
+            elem: '.class-fan-slider',
+            min: 0,
+            max: 100,
+            input: true,
+            theme: 'black',
+            done: function(value){
+                jsonResponse.fanPowerValue = value;
+            }
+        })
+   
     });
 
     layui.use('form', function () {
         var form = layui.form;
         var layer = layui.layer;
+        form.set({
+            autocomplete: 'off' 
+        });
+
+        form.on('switch(checkbox-fan-filter)', function (data) {
+            var elem = data.elem;
+            if(elem.checked == false){
+                jsonResponse.fanControlMode = 0;
+                slider_fan.setValue(jsonResponse.fanPowerValue);
+                console.log("关闭温控!");
+            }else{
+                console.log("打开温控!");
+                jsonResponse.fanControlMode = 1;
+            }
+            updateLedFanModelVisibility(elem.checked);  
+        });
+
 
         form.on('select(led-Channel-value)', function (data) {
             var ledMode = form.val().ledModel;
+            jsonResponse.ledChannelCount = data.value;
             if(ledMode == 0){
                 updateSliderInputsVisibility(data.value);
             }else{
@@ -507,6 +560,7 @@
             var elem = data.elem;
             var channel = form.val().ledChannel;
             updateLedControllerModelVisibility(elem.value);
+            jsonResponse.isEnableSunTime = data.value;
             if(data.value == 0){
                 updateSliderInputsVisibility(channel);
             }else{
@@ -515,59 +569,135 @@
         });
 
         form.on('submit(ledFormUpdate)', function (data) {
-            console.log(JSON.stringify(data.field));
+            var loadIndex = layer.load(2)
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/api/updata/led', true);
+            xhr.open('POST', '/api/updata', true);
             xhr.onreadystatechange = function () {
                 if (xhr.status === 200) {
                     layer.msg('保存成功!');
+                }else{
+                    layer.close(loadIndex)
                 }
             };
             xhr.onerror = function () {
+                layer.close(loadIndex)
                 layer.msg('保存失败,请检查设备是否在线');
             };
-            var jsonData = JSON.stringify(jsonResponse);
+            var body = {
+                "fanControlMode":jsonResponse.fanControlMode,
+                "fanPowerValue":jsonResponse.fanPowerValue,
+                "ledChannelCount":jsonResponse.ledChannelCount,
+                "isEnableSunTime":jsonResponse.isEnableSunTime,
+                "pwmValuesPerHour":jsonResponse.pwmValuesPerHour,
+                "rgbwuv":jsonResponse.rgbwuv
+            };
+            var jsonData = JSON.stringify(body);
+            console.log(jsonData);
             xhr.send(jsonData);
             return false;
         });
     });
 
+
     function requestData() {
-        // var xhr = new XMLHttpRequest();
-        // xhr.open('GET','/api/data', true);
-        // xhr.responseType = 'json';
-        // xhr.onload = function () {
-        //     if (xhr.status === 200) {
-        // jsonResponse = xhr.response;
-        //填充表单        
-        var form = layui.form;
-        layui.form.val("ledForm",{
-            "ledChannel": jsonResponse.ledChannelCount,
-            "ledModel":jsonResponse.isEnableSunTime
-        });
-        layui.form.val("addWatherForm",{
-            "addWatherSwitch": jsonResponse.isEnableAddWather,
-            "addWatherTimeout":jsonResponse.addWatherTimeout
-        });
-        
-        updateLedControllerModelVisibility(jsonResponse.isEnableSunTime);
-        if (jsonResponse.isEnableSunTime == 1) {
-            updateMyChartVisibility(jsonResponse.ledChannelCount);
-        } else {
-            updateSliderInputsVisibility(jsonResponse.ledChannelCount)
+        var loadIndex = layer.load(2)
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/api/data', true);
+        xhr.responseType = 'json';
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                jsonResponse = xhr.response;
+                // 填充表单        
+                var form = layui.form;
+                layui.form.val("ledForm", {
+                    "ledChannel": jsonResponse.ledChannelCount,
+                    "ledModel": jsonResponse.isEnableSunTime,
+                    "fanAutoSwitch": jsonResponse.fanControlMode
+                });
+                layui.form.val("addWatherForm", {
+                    "addWatherSwitch": jsonResponse.isEnableAddWather,
+                    "addWatherTimeout": jsonResponse.addWatherTimeout
+                });
+
+                updateLedFanModelVisibility(jsonResponse.fanControlMode)
+                updateLedControllerModelVisibility(jsonResponse.isEnableSunTime);
+                if (jsonResponse.isEnableSunTime == 1) {
+                    updateMyChartVisibility(jsonResponse.ledChannelCount);
+                } else {
+                    updateSliderInputsVisibility(jsonResponse.ledChannelCount)
+                };
+                slider_fan.setValue(jsonResponse.fanPowerValue)
+                slider_r.setValue(jsonResponse.rgbwuv[0]);
+                slider_g.setValue(jsonResponse.rgbwuv[1]);
+                slider_b.setValue(jsonResponse.rgbwuv[2]);
+                slider_w.setValue(jsonResponse.rgbwuv[3]);
+                slider_u.setValue(jsonResponse.rgbwuv[4]);
+                layer.close(loadIndex)
+            } else {
+                layer.close(loadIndex)
+                layer.msg("数据请求失败,请检查设备状态!");
+                console.error('Request failed with status:', xhr.status);
+            }
         };
-        // renderForm();
-        //     } else {
-        //         console.error('Request failed with status:', xhr.status);
-        //     }
-        // };
-        // xhr.onerror = function () {
-        //     console.error('Network error occurred');
-        // };
-        // xhr.send();
+        xhr.onerror = function () {
+            layer.close(loadIndex)
+            layer.msg("数据请求失败,请检查设备状态!");
+            console.error('Network error occurred');
+        };
+        xhr.send();
     }
 
-    requestData();
+    $(document).ready(function () {
+        console.log('页面加载成功~!');
+        // 请求配置信息
+        requestData();
+        //请求传感器信息
+        requestSensorData();
+        //开启定时刷新
+        setInterval(requestSensorData, 5000);
+        var ntpTimeValue = 0;
+
+        function requestSensorData() {
+            $.ajax({
+                url: '/api/sensor',
+                type: 'GET',
+                success: function (data) {
+                    updateSensorData(data);
+                    if (ntpTimeValue == 0) {
+                        ntpTimeValue = data.ntpValue;
+                        setInterval(updateClock, 1000);
+                    }
+                },
+                error: function () {
+                    layer.msg("数据请求失败,请检查设备状态!");
+                }
+            });
+        }
+        // 封装更新页面传感器数据的函数
+        function updateSensorData(data) {
+            document.getElementById("card-temperature").innerHTML = data.temperatureData + "°";
+            document.getElementById("card-voltage").innerHTML = data.voltage;
+            document.getElementById("card-current").innerHTML = data.current;
+            document.getElementById("card-led-value").innerHTML = data.ledPwmValues;
+            document.getElementById("card-win-lv").innerHTML = data.waterLevelIn == 0 ? "低水位" : "正常";
+            document.getElementById("card-mos1-value").innerHTML = data.mos_b1 == 0 ? "关闭" : "打开";
+            document.getElementById("card-mos2-value").innerHTML = data.mos_b2 == 0 ? "关闭" : "打开";
+            document.getElementById("card-mos3-value").innerHTML = data.mos_b3 == 0 ? "关闭" : "打开";
+            document.getElementById("card-led-mode").innerHTML = jsonResponse.isEnableSunTime == 0 ? "手动模式" : "日出日落";
+            document.getElementById("card-fan-power").innerHTML = jsonResponse.fanPowerValue;
+            console.log(data);
+        }
+        // 封装更新页面时钟的函数
+        function updateClock() {
+            var clockElement = document.getElementById("card-ntp");
+            var currentTime = new Date(ntpTimeValue * 1000);
+            currentTime.setSeconds(currentTime.getSeconds() + 1);
+            var util = layui.util;
+            var result = util.toDateString(currentTime);
+            clockElement.innerHTML = result;
+        }
+
+    });
 
 </script>
 </body>

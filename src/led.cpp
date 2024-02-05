@@ -15,7 +15,6 @@ void setPWMPercentage(int pwmChannel, int percentage)
 {
     // 将百分比映射到PWM值范围
     int pwmValue = map(percentage, 0, 100, 0, 1024);
-    ESP_LOGI("LedProgress", "当前通道: %d%-PWM: %d", pwmChannel, pwmValue);
     // 设置PWM值
     ledcWrite(pwmChannel, pwmValue);
 }
@@ -29,12 +28,21 @@ void startPreModel()
 
 void ledProgress()
 {
+    if (ntpClient.isTimeSet()){
+        SensorDataStruct.ntpValue = ntpClient.getEpochTime();
+    }else{
+        ntpClient.update();
+    }
     int pwmCount = 0;
     if (StoreDataStruct.isEnableLedSunTime == 0){
         for (int i = 0; i < LED_Channel; i++)
         {
-            setPWMPercentage(i, StoreDataStruct.rgbwu[i]);
-            pwmCount = pwmCount + StoreDataStruct.rgbwu[i];
+            int currentBrightness = constrain(StoreDataStruct.rgbwu[i], 0, 100);
+            setPWMPercentage(i,currentBrightness);
+            pwmCount = pwmCount + currentBrightness;
+            //映射到传感器数据上
+            SensorDataStruct.ledPwmValues[i] = currentBrightness;
+            ESP_LOGI("LedProgress", "手动模式,当前通道: %d  PWM: %d", i, currentBrightness);
         }
     }else{
         if (isPreModel){
@@ -48,7 +56,6 @@ void ledProgress()
             }
         }else{
             if (!ntpClient.isTimeSet()){
-                ntpClient.update();
                 ESP_LOGI("LedProgress", "等待 NTP 时钟....");
                 return;
             }
@@ -92,15 +99,33 @@ void ledProgress()
                 currentBrightness = startValues[i];
             }
             currentBrightness = constrain(currentBrightness, 0, 100);
+            //映射到传感器上
+            SensorDataStruct.ledPwmValues[i] = currentBrightness;
+            ESP_LOGI("LedProgress", "日出日落,当前通道: %d  PWM: %d", i, currentBrightness);
+            //设置PWM
             setPWMPercentage(i, currentBrightness);
+            //功率预估
             pwmCount = pwmCount + currentBrightness;
         }
-    }  
-    if (pwmCount > fan_start_count){
-        setPWMPercentage(5, pwmCount / LED_Channel);
     }
-    else{
-        setPWMPercentage(5, 0);
+    //判断当前温控模式
+    if (StoreDataStruct.fanControlMode == 1)
+    {
+        if (pwmCount > fan_start_count)
+        {
+            int fanPwm = pwmCount / LED_Channel;
+            //映射到传感器
+            SensorDataStruct.mos_b2 = fanPwm;
+            setPWMPercentage(5, fanPwm);
+        }
+        else
+        {
+            SensorDataStruct.mos_b2 = 0;
+            setPWMPercentage(5, 0);
+        }
+    }else{
+        SensorDataStruct.mos_b2 = StoreDataStruct.fanPowerValue;
+        setPWMPercentage(5, StoreDataStruct.fanPowerValue);
     }
 }
 

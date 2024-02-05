@@ -9,7 +9,7 @@ void setup(){
   esp_log_level_set("*", ESP_LOG_VERBOSE);        // set all components to ERROR level
   ESP_LOGI(TAG,"初始化中......");
   //初始化IO
-  ESP_GPIO_init();
+  // ESP_GPIO_init();
   //初始化储存
   initStore();
   //连接Wi-Fi

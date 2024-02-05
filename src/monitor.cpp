@@ -30,8 +30,9 @@ void monitorFishTankWaterLevel()
     {
       pumpStartTime = millis();
     }
-    // 设置PWM值
+    //打开B1
     digitalWrite(mos_b1_pin, HIGH);
+    SensorDataStruct.mos_b1 = 100;
     Serial.println("补水中.....");
     if (isAddWater == false)
     {
@@ -42,6 +43,7 @@ void monitorFishTankWaterLevel()
     if (millis() - pumpStartTime >= pumpTimeout)
     {
       digitalWrite(mos_b1_pin, LOW);
+      SensorDataStruct.mos_b1 = 0;
       isAlert = 1;
       alertMessage = "补水超时!请检查水位传感器是否异常";
       pumpStartTime = 0; // 重置启动时间

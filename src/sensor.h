@@ -4,13 +4,18 @@
 
 typedef struct
 {
-    int Water_FinshTank_In;          // 鱼缸水位
-    int Water_FinshTank_Out;         // 废水水位
-    int Water_FinshTank_Salt;        // 海水水位
-    int Water_FinshTank_Alert;       // 鱼缸内部物理传感器
-    double  TemperatureData;         // 水温  
-    double Voltage;
-    double Current;
+    int waterFinshTankIn;          // 鱼缸水位
+    int waterFinshTankOut;         // 废水水位
+    int waterFinshTankSalt;        // 海水水位
+    int waterFinshTankAlert;       // 鱼缸内部物理传感器
+    double temperatureData;         // 水温  
+    int ledPwmValues[5];             //当前pwm
+    long ntpValue;                 //ntp时钟
+    int mos_b1;                      //mos1当前pwm
+    int mos_b2;                      //mos2当前pwm
+    int mos_b3;                      //mos3当前pwm
+    double voltage;
+    double current;
 } DataStruct_t;
 extern DataStruct_t SensorDataStruct;       // 鱼缸传感器结构体
 

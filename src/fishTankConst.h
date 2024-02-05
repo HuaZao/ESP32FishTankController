@@ -6,7 +6,7 @@
 // 仅第一次需要初始化文件系统
 #define FORMAT_FILESYSTEM false
 
-//LED通道数 R,G,B,W,U 
+//LED设计最大通道数 R,G,B,W,U 
 #define LED_Channel 5
 //风扇启动阈值(LED PWM 相加),如RGB 最大PWM为300,
 #define fan_start_count 100

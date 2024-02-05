@@ -4,7 +4,8 @@
     "addWatherTimeout":10, 
     "isEnableWaterChanges":0,
     "isEnableSunTime":0,
-    "temperatureControlMode":0,
+    "temperatureData":1,
+    "fanPowerValue":50,
     "changesWaterTiming":0,
     "changesWaterCount":5,
     "pwmValuesPerHour":[
@@ -33,6 +34,6 @@
         {"22":[10,10,10,10,0]},
         {"23":[10,10,10,10,0]}
     ],
-    "rgbuv":[50,50,50,50,50],
-    "pushKey":"PDU23935TXd5sxyNlBZ9bvze0OSMTb9EKn8febs4P"
+    "rgbwuv":[50,50,50,50,50],
+    "pushKey":""
 }

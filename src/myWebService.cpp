@@ -120,6 +120,10 @@ void jsonGetApi()
               String jsonString = storeJsonString();
   request->send(200, "application/json",jsonString); });
 
+  server.on("/api/sensor", HTTP_GET, [](AsyncWebServerRequest *request)
+            {      
+  request->send(200, "application/json",sensorJsonString()); });
+
   server.on("/api/demo", HTTP_GET, [](AsyncWebServerRequest *request)
             {
     startPreModel();
@@ -156,7 +160,7 @@ void setupService()
   ntpClient.update();
   if(ntpClient.isTimeSet())
   {
-      ESP_LOGI(TAG,"获取网络时间成功:%s",ntpClient.getFormattedTime());
+    ESP_LOGI(TAG,"获取网络时间成功:%s",ntpClient.getFormattedTime());
   }
   // connectToMqtt();
 }
