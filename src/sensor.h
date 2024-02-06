@@ -10,7 +10,7 @@ typedef struct
     int waterFinshTankAlert;       // 鱼缸内部物理传感器
     double temperatureData;         // 水温  
     int ledPwmValues[5];             //当前pwm
-    long ntpValue;                 //ntp时钟
+    char ntpValue[10];                 //ntp时钟
     int mos_b1;                      //mos1当前pwm
     int mos_b2;                      //mos2当前pwm
     int mos_b3;                      //mos3当前pwm

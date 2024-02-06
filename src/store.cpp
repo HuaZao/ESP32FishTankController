@@ -15,123 +15,170 @@ void initStore()
     if (LittleFS.begin())
     {
         File file = LittleFS.open("/config.json", FILE_READ);
-        String fileContent = "";
-        if (!file || file.isDirectory())
-        {
-            ESP_LOGE("ConfigDataStruct", "Failed to open file for reading");
-            return;
-        }
-        while (file.available())
-        {
-            char c = file.read();
-            fileContent += c;
-        }
-        DynamicJsonDocument doc(4096);
-        DeserializationError error = deserializeJson(doc, fileContent);
-        if (error)
-        {
-            ESP_LOGE("ConfigDataStruct", "Failed to parse JSON:%s", error.c_str());
-            return;
-        }
-        JsonObject root = doc.as<JsonObject>();
-        reloadConfig(root);
-        root.clear();
+        size_t fileSize = file.size();
+        char *fileContent = (char *)malloc(fileSize + 1);
+        size_t bytesRead = file.readBytes(fileContent, fileSize);
+        fileContent[bytesRead] = '\0';
+        // ESP_LOGD("ConfigDataStruct","====>%s",fileContent);
+        reloadConfig(fileContent);
         file.close();
+        free(fileContent);
     }
     else
     {
-        ESP_LOGE("ConfigDataStruct", "开始格式化LittleFS......");
-        // LittleFS.format();
-        // ESP.restart();
+        ESP_LOGE("ConfigDataStruct", "请初始化LittleFS......");
     }
 }
 
-template <typename T>
-T getJsonValueOrDefault(JsonObject &root, const char *key, const T &defaultValue)
-{
-    if (root.containsKey(key))
-    {
-        return root[key].as<T>();
-    }
-    return defaultValue;
-}
-
-void reloadConfig(JsonObject &root)
-{
-    StoreDataStruct.ledChannelCount = getJsonValueOrDefault(root, "ledChannelCount", StoreDataStruct.ledChannelCount);
-    StoreDataStruct.isEnableAddWather = getJsonValueOrDefault(root, "isEnableAddWather", StoreDataStruct.isEnableAddWather);
-    StoreDataStruct.addWatherTimeout = getJsonValueOrDefault(root, "addWatherTimeout", StoreDataStruct.addWatherTimeout);
-    StoreDataStruct.isEnableWaterChanges = getJsonValueOrDefault(root, "isEnableWaterChanges", StoreDataStruct.isEnableWaterChanges);
-    StoreDataStruct.isEnableLedSunTime = getJsonValueOrDefault(root, "isEnableSunTime", StoreDataStruct.isEnableLedSunTime);
-    StoreDataStruct.fanControlMode = getJsonValueOrDefault(root, "fanControlMode", StoreDataStruct.fanControlMode);
-    StoreDataStruct.fanPowerValue = getJsonValueOrDefault(root, "fanPowerValue", StoreDataStruct.fanPowerValue);
-    StoreDataStruct.changesWaterTiming = getJsonValueOrDefault(root, "changesWaterTiming", StoreDataStruct.changesWaterTiming);
-    StoreDataStruct.pushKey = getJsonValueOrDefault(root, "pushKey", StoreDataStruct.pushKey); 
-
-    if (root.containsKey("rgbwuv"))
-    {
-        JsonArray rgbwuValues = root["rgbwuv"];
-        for (int i = 0; i < LED_Channel && i < rgbwuValues.size(); i++)
-        {
-            StoreDataStruct.rgbwu[i] = rgbwuValues[i];
+void parseJsonToStruct(const char *json_str) {
+    cJSON *root = cJSON_Parse(json_str);
+    if (root != NULL) {
+        cJSON *addWater = cJSON_GetObjectItem(root, "addWather");
+        if (addWater != NULL) {
+            ESP_LOGE("ConfigDataStruct", "更新addWather");
+            StoreDataStruct.addWater.isEnable = cJSON_GetObjectItem(addWater, "isEnable")->valueint;
+            StoreDataStruct.addWater.timeout = cJSON_GetObjectItem(addWater, "timeout")->valueint;
         }
-    }
 
-    if (root.containsKey("pwmValuesPerHour"))
-    {
-        JsonArray pwmHourValues = root["pwmValuesPerHour"];
-        for (int i = 0; i < 24; i++)
-        {
-            String key = String(i);
-            JsonObject value = pwmHourValues[i];
-            for (int j = 0; j < LED_Channel; j++)
-            {
-                StoreDataStruct.pwmValuesPerHour[i][j] = value[key][j];
+        cJSON *waterChanges = cJSON_GetObjectItem(root, "waterChanges");
+        if (waterChanges != NULL) {
+            ESP_LOGE("ConfigDataStruct", "更新waterChanges");
+            StoreDataStruct.waterChanges.isEnable = cJSON_GetObjectItem(waterChanges, "isEnable")->valueint;
+            StoreDataStruct.waterChanges.timeout = cJSON_GetObjectItem(waterChanges, "timeout")->valueint;
+            StoreDataStruct.waterChanges.count = cJSON_GetObjectItem(waterChanges, "count")->valueint;
+
+            cJSON *clock = cJSON_GetObjectItem(waterChanges, "clock");
+            if (clock != NULL) {
+                StoreDataStruct.waterChanges.clock.hour = cJSON_GetObjectItem(clock, "hour")->valueint;
+                StoreDataStruct.waterChanges.clock.minute = cJSON_GetObjectItem(clock, "minute")->valueint;
+                StoreDataStruct.waterChanges.clock.week = cJSON_GetObjectItem(clock, "week")->valueint;
             }
         }
-        // ESP_LOGI("ConfigDataStruct", "index 12 value => %d  | %d | %d | %d | %d",StoreDataStruct.pwmValuesPerHour[12][0]
-        // ,StoreDataStruct.pwmValuesPerHour[12][1],StoreDataStruct.pwmValuesPerHour[12][2],StoreDataStruct.pwmValuesPerHour[12][3]
-        // ,StoreDataStruct.pwmValuesPerHour[12][4]);
-    }
-    serializeJsonPretty(root, Serial);
-    ESP_LOGI("ConfigDataStruct", "Reload Config Success");
-}
 
-DynamicJsonDocument mapConfig()
-{
-    DynamicJsonDocument doc(4096);
-    doc["ledChannelCount"] = StoreDataStruct.ledChannelCount;
-    doc["isEnableAddWather"] = StoreDataStruct.isEnableAddWather;
-    doc["addWatherTimeout"] = StoreDataStruct.addWatherTimeout;
-    doc["isEnableWaterChanges"] = StoreDataStruct.isEnableWaterChanges;
-    doc["isEnableSunTime"] = StoreDataStruct.isEnableLedSunTime;
-    doc["fanControlMode"] = StoreDataStruct.fanControlMode;
-    doc["fanPowerValue"] = StoreDataStruct.fanPowerValue;
-    doc["changesWaterTiming"] = StoreDataStruct.changesWaterTiming;
-    doc["changesWaterCount"] = StoreDataStruct.changesWaterCount;
-    doc["temperature"] = SensorDataStruct.temperatureData;
-    doc["pushKey"] = StoreDataStruct.pushKey;
-
-    JsonArray rgbuvArray = doc.createNestedArray("rgbwuv");
-    for (int i = 0; i < LED_Channel; i++)
-    {
-        rgbuvArray.add(StoreDataStruct.rgbwu[i]);
-    }
-    JsonArray pwmValuesArray = doc.createNestedArray("pwmValuesPerHour");
-    for (int i = 0; i < 24; i++)
-    {
-        String key = String(i);
-        JsonObject hourObj = pwmValuesArray.createNestedObject();
-        JsonArray valuesArray = hourObj.createNestedArray(key);
-        for (int j = 0; j < LED_Channel; j++)
-        {
-            valuesArray.add(StoreDataStruct.pwmValuesPerHour[i][j]);
+        cJSON *wifi = cJSON_GetObjectItem(root, "wifi");
+        if (wifi != NULL) {
+            ESP_LOGE("ConfigDataStruct", "更新Wi-Fi");
+            strcpy(StoreDataStruct.wifi.ssid, cJSON_GetObjectItem(wifi, "ssid")->valuestring);
+            strcpy(StoreDataStruct.wifi.psw, cJSON_GetObjectItem(wifi, "psw")->valuestring);
         }
+
+        cJSON *mqtt = cJSON_GetObjectItem(root, "mqtt");
+        if (mqtt != NULL) {
+            ESP_LOGE("ConfigDataStruct", "更新mqtt");
+            StoreDataStruct.mqtt.port = cJSON_GetObjectItem(mqtt, "port")->valueint;
+            strcpy(StoreDataStruct.mqtt.ip, cJSON_GetObjectItem(mqtt, "ip")->valuestring);
+        }
+
+        cJSON *led = cJSON_GetObjectItem(root, "led");
+        if (led != NULL) {
+            ESP_LOGE("ConfigDataStruct", "更新led");
+            StoreDataStruct.led.ledChannelCount = cJSON_GetObjectItem(led, "ledChannelCount")->valueint;
+            StoreDataStruct.led.isEnableSunTime = cJSON_GetObjectItem(led, "isEnableSunTime")->valueint;
+            StoreDataStruct.led.fanPowerValue = cJSON_GetObjectItem(led, "fanPowerValue")->valueint;
+            StoreDataStruct.led.fanControlMode = cJSON_GetObjectItem(led, "fanControlMode")->valueint;
+            StoreDataStruct.led.fanStartUpValue = cJSON_GetObjectItem(led, "fanStartUpValue")->valueint;
+
+            //解析pwmValuesPerHour数组
+            cJSON *pwmArray = cJSON_GetObjectItem(led, "pwmValuesPerHour");
+            for (int i = 0; i < 24; i++)
+            {
+                char key[10];
+                snprintf(key, sizeof(key), "%d", i);
+                cJSON *hoursObj = cJSON_GetArrayItem(pwmArray, i);
+                cJSON *current_item = hoursObj->child;
+                while (current_item != NULL) {
+                    cJSON *object = cJSON_GetObjectItemCaseSensitive(hoursObj, current_item->string);
+                    for (int j = 0; j < LED_Channel; j++)
+                    {
+                        cJSON *item = cJSON_GetArrayItem(object, j);
+                        StoreDataStruct.led.pwmValuesPerHour[i][j] = item->valueint;
+                    }
+                    current_item = current_item->next;
+                }
+            }
+
+            // 解析rgbwuv数组
+            cJSON *rgbwuvArray = cJSON_GetObjectItem(led, "rgbwuv");
+            for (int i = 0; i < LED_Channel; i++)
+            {
+                cJSON *item = cJSON_GetArrayItem(rgbwuvArray, i);
+                StoreDataStruct.led.rgbwuv[i] = item->valueint;
+            }
+        }
+        cJSON *pushKey = cJSON_GetObjectItem(root, "pushKey");
+        if(pushKey != NULL){
+            ESP_LOGE("ConfigDataStruct", "更新pushkey");
+            strcpy(StoreDataStruct.pushKey, pushKey->valuestring);
+        }
+        ESP_LOGI("ConfigDataStruct", "%s",cJSON_Print(root));
+        cJSON_Delete(root);
     }
-    return doc;
 }
 
-void updateConfig(Config_DataStruct_t data)
+void reloadConfig(const char *json_str){
+    ESP_LOGI("ConfigDataStruct", "收到配置 %s",json_str);
+    parseJsonToStruct(json_str);
+}
+
+char *structToJson(Config_DataStruct_t config) {
+    cJSON *root = cJSON_CreateObject();
+    cJSON *addWater = cJSON_CreateObject();
+    cJSON_AddItemToObject(root, "addWather", addWater);
+    cJSON_AddNumberToObject(addWater, "isEnable", config.addWater.isEnable);
+    cJSON_AddNumberToObject(addWater, "timeout", config.addWater.timeout);
+
+    cJSON *waterChanges = cJSON_CreateObject();
+    cJSON_AddItemToObject(root, "waterChanges", waterChanges);
+    cJSON_AddNumberToObject(waterChanges, "isEnable", config.waterChanges.isEnable);
+    cJSON_AddNumberToObject(waterChanges, "timeout", config.waterChanges.timeout);
+    cJSON_AddNumberToObject(waterChanges, "count", config.waterChanges.count);
+    cJSON *clock = cJSON_CreateObject();
+    cJSON_AddItemToObject(waterChanges, "clock", clock);
+    cJSON_AddNumberToObject(clock, "hour", config.waterChanges.clock.hour);
+    cJSON_AddNumberToObject(clock, "minute", config.waterChanges.clock.minute);
+    cJSON_AddNumberToObject(clock, "week", config.waterChanges.clock.week);
+
+    cJSON *wifi = cJSON_CreateObject();
+    cJSON_AddItemToObject(root, "wifi", wifi);
+    cJSON_AddStringToObject(wifi, "ssid", config.wifi.ssid);
+    cJSON_AddStringToObject(wifi, "psw", config.wifi.psw);
+
+    cJSON *mqtt = cJSON_CreateObject();
+    cJSON_AddItemToObject(root, "mqtt", mqtt);
+    cJSON_AddNumberToObject(mqtt, "port", config.mqtt.port);
+    cJSON_AddStringToObject(mqtt, "ip", config.mqtt.ip);
+
+    cJSON *led = cJSON_CreateObject();
+    cJSON_AddItemToObject(root, "led", led);
+    cJSON_AddNumberToObject(led, "ledChannelCount", config.led.ledChannelCount);
+    cJSON_AddNumberToObject(led, "isEnableSunTime", config.led.isEnableSunTime);
+    cJSON_AddNumberToObject(led, "fanPowerValue", config.led.fanPowerValue);
+    cJSON_AddNumberToObject(led, "fanControlMode", config.led.fanControlMode);
+    cJSON_AddNumberToObject(led, "fanStartUpValue", config.led.fanStartUpValue);
+    
+    cJSON *pwmValuesPerHourArray = cJSON_CreateArray();
+     for (int i = 0; i < 24; ++i) {
+        cJSON *object = cJSON_CreateObject();
+        cJSON *keyArray = cJSON_CreateIntArray(config.led.pwmValuesPerHour[i], LED_Channel);
+        char key[10];
+        snprintf(key, sizeof(key), "%d", i);
+        cJSON_AddItemToObject(object, key, keyArray);
+        cJSON_AddItemToArray(pwmValuesPerHourArray, object);
+    }
+    cJSON_AddItemToObject(led, "pwmValuesPerHour", pwmValuesPerHourArray);
+
+    cJSON *rgbwuv = cJSON_CreateArray();
+    cJSON_AddItemToObject(led, "rgbwuv", rgbwuv);
+    for (int i = 0; i < LED_Channel; i++) {
+        cJSON_AddItemToArray(rgbwuv, cJSON_CreateNumber(config.led.rgbwuv[i]));
+    }
+    cJSON_AddStringToObject(root, "pushKey", config.pushKey);
+    char *json_str = cJSON_PrintUnformatted(root);
+    cJSON_Delete(root);
+    return json_str;
+}
+
+void updateConfig()
 {
     File file = LittleFS.open("/config.json", FILE_WRITE);
     if (!file)
@@ -139,42 +186,29 @@ void updateConfig(Config_DataStruct_t data)
         ESP_LOGE("ConfigDataStruct", "Failed to open file for reading");
         return;
     }
-    DynamicJsonDocument doc = mapConfig();
-    String jsonString;
-    serializeJson(doc, jsonString);
+    char *jsonString = structToJson(StoreDataStruct);
     file.print(jsonString);
-    // serializeJsonPretty(doc, Serial);
-    doc.clear();
     file.close();
     ESP_LOGI("ConfigDataStruct", "Config Save Success!");
 }
 
-String storeJsonString(){
-    DynamicJsonDocument doc = mapConfig();
-    String jsonString;
-    serializeJson(doc, jsonString);
-    doc.clear();
-    return jsonString;
+char *storeJsonString(){
+    return structToJson(StoreDataStruct);
 }
 
-String sensorJsonString(){
-    DynamicJsonDocument doc(4096);
-    doc["temperatureData"] = SensorDataStruct.temperatureData;
-    doc["waterLevelIn"] = SensorDataStruct.waterFinshTankIn;
-    doc["waterLevelOut"] = SensorDataStruct.waterFinshTankOut;
-    doc["ntpValue"] = SensorDataStruct.ntpValue;
-    doc["mos_b1"] = StoreDataStruct.changesWaterTiming;
-    doc["mos_b2"] = StoreDataStruct.changesWaterCount;
-    doc["mos_b3"] = SensorDataStruct.temperatureData;
-    doc["voltage"] = SensorDataStruct.voltage;
-    doc["current"] = SensorDataStruct.current;
-   JsonArray ledPwmValues = doc.createNestedArray("ledPwmValues");
-    for (int i = 0; i < LED_Channel; i++)
-    {
-        ledPwmValues.add(SensorDataStruct.ledPwmValues[i]);
-    }
-    String jsonString;
-    serializeJson(doc, jsonString);
-    doc.clear();
-    return jsonString;
+char *sensorJsonString(){
+    cJSON *root = cJSON_CreateObject();
+    cJSON_AddNumberToObject(root, "temperatureData", SensorDataStruct.temperatureData);
+    cJSON_AddNumberToObject(root, "waterLevelIn", SensorDataStruct.waterFinshTankIn);
+    cJSON_AddNumberToObject(root, "waterLevelOut", SensorDataStruct.waterFinshTankOut);
+    cJSON_AddStringToObject(root, "ntpValue", SensorDataStruct.ntpValue);
+    cJSON_AddNumberToObject(root, "mos_b1", SensorDataStruct.mos_b1);
+    cJSON_AddNumberToObject(root, "mos_b2", SensorDataStruct.mos_b2);
+    cJSON_AddNumberToObject(root, "mos_b3", SensorDataStruct.mos_b3);
+    cJSON_AddNumberToObject(root, "voltage", SensorDataStruct.voltage);
+    cJSON_AddNumberToObject(root, "current", SensorDataStruct.current);
+    // ledPwmValues
+    char *json_str = cJSON_PrintUnformatted(root);
+    cJSON_Delete(root);
+    return json_str;
 }

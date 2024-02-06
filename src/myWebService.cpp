@@ -26,6 +26,7 @@ AsyncWebServer server(80);
 DNSServer dns;
 WiFiUDP udp;
 NTPClient ntpClient(udp, "ntp1.aliyun.com", 8 * 3600); // 中国时间
+AsyncWiFiManager wifiManager(&server, &dns);
 
 bool shouldSaveConfig = false;
 
@@ -71,9 +72,9 @@ void onMqttMessage(char *topic, char *payload, AsyncMqttClientMessageProperties 
   JsonObject obj = doc.as<JsonObject>();
   if (strcmp(topic, MQTT_UPDATE_STORE_TOPIC) == 0)
   {
-    JsonObject obj = doc.as<JsonObject>();
-    reloadConfig(obj);
-    updateConfig(StoreDataStruct);
+    // JsonObject obj = doc.as<JsonObject>();
+    // reloadConfig(obj);
+    // updateConfig(StoreDataStruct);
   }
 }
 
@@ -100,18 +101,10 @@ void jsonUpdataApi()
   server.on(
       "/api/updata", HTTP_POST, [](AsyncWebServerRequest *request) {}, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)
       {
-  DynamicJsonDocument doc(4096);
-  DeserializationError error = deserializeJson(doc, (char *)data, len); //deserialize the Body I get
-  if (error) {
-      request->send(500, "application/json", "{\"msg\":\"json error\"}"); 
-  }else{
-       JsonObject obj = doc.as<JsonObject>();
-       reloadConfig(obj);
-       updateConfig(StoreDataStruct);
-       request->send(200, "application/json", "{\"msg\":\"success\"}"); 
-  } });
+       reloadConfig((char *)data);
+       updateConfig();
+       request->send(200, "application/json", "{\"msg\":\"success\"}"); });
 }
-
 
 void jsonGetApi()
 {
@@ -128,6 +121,13 @@ void jsonGetApi()
             {
     startPreModel();
        request->send(200, "application/json", "{\"msg\":\"success\"}"); });
+
+  server.on("/api/resetw", HTTP_POST, [](AsyncWebServerRequest *request)
+            {
+              wifiManager.resetSettings();
+              delay(3000);
+              ESP.restart();
+       request->send(200, "application/json", "{\"msg\":\"设备Wi-Fi重置成功,请连接FishController_AP进行配网操作!\"}"); });
 }
 
 void saveConfigCallback () {
@@ -136,24 +136,22 @@ void saveConfigCallback () {
 
 void setupService()
 {
-  AsyncWiFiManager wifiManager(&server, &dns);
-  wifiManager.setDebugOutput(false);
+  wifiManager.setDebugOutput(true);
   wifiManager.setSaveConfigCallback(saveConfigCallback);
   wifiManager.setTimeout(180);
+  wifiManager.setConnectTimeout(15);
   AsyncWiFiManagerParameter custom_mqtt_server("server", "mqtt server", mqtt_server, 40);
   AsyncWiFiManagerParameter custom_mqtt_port("port", "mqtt port", mqtt_port, 5);
   wifiManager.addParameter(&custom_mqtt_server);
   wifiManager.addParameter(&custom_mqtt_port);
-  if(!wifiManager.autoConnect("FishController_AP")) {
-    ESP_LOGI(TAG,"failed to connect and hit timeout");
-    delay(3000);
-    // ESP.restart();
-  }
+  wifiManager.autoConnect("FishController_AP");
   // 获取自定义的数据
   strcpy(mqtt_server, custom_mqtt_server.getValue());
   strcpy(mqtt_port, custom_mqtt_port.getValue());
   if (shouldSaveConfig) {
-
+    //  StoreDataStruct.mqtt.ip = mqtt_server;
+    //  StoreDataStruct.mqtt.port = mqtt_port;
+    //  updateConfig();
   }
   ESP_LOGI(TAG,"WiFi connected IP:%s",WiFi.localIP().toString().c_str());
   ntpClient.begin();
@@ -195,7 +193,7 @@ void initWebService()
 
 void sc_send(String message)
 {
-  //PDU23935TXd5sxyNlBZ9bvze0OSMTb9EKn8febs4P
+  // PDU23935TXd5sxyNlBZ9bvze0OSMTb9EKn8febs4P
   // String serverUrl = "https://api2.pushdeer.com/message/push?pushkey=PDU23935TXd5sxyNlBZ9bvze0OSMTb9EKn8febs4P" + StoreDataStruct.pushKey;
   // serverUrl += "&text="+ message + "&type=text";
   // HTTPClient http;

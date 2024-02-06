@@ -1,7 +1,7 @@
 
 #include "sensor.h"
 #include <LittleFS.h>
-#include <INA226.h>
+// #include <INA226.h>
 int avgStoreTS = 0;
 int sampleStoreTS = 0;
 float TS = 0.0000;
@@ -9,7 +9,7 @@ float TSlog = 0.0000;
 
 extern xSemaphoreHandle SemaphoreHandle;
 DataStruct_t SensorDataStruct;
-INA226 ina;
+// INA226 ina;
 
 void printData(DataStruct_t data)
 {
@@ -23,7 +23,7 @@ void printData(DataStruct_t data)
 
 void readWaterSensor()
 {
-  SensorDataStruct.waterFinshTankIn = digitalRead(fishTank_water_level_pin);
+  SensorDataStruct.waterFinshTankIn = digitalRead(backupwater_pin);
   SensorDataStruct.waterFinshTankOut = digitalRead(wastewater_level_pin);
   SensorDataStruct.waterFinshTankSalt = digitalRead(seawater_level_pin);
   SensorDataStruct.waterFinshTankAlert = digitalRead(backupwater_pin);
@@ -57,7 +57,6 @@ void gatherSensorTask(void *arg)
       readTemperatureSensor();
       readWaterSensor();
       printData(SensorDataStruct);
-      vTaskDelay(3000 / portTICK_PERIOD_MS);
     }
   }
 }

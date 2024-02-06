@@ -28,16 +28,21 @@ void startPreModel()
 
 void ledProgress()
 {
+
     if (ntpClient.isTimeSet()){
-        SensorDataStruct.ntpValue = ntpClient.getEpochTime();
+        currentHour = ntpClient.getHours();
+        int currentMinutes = ntpClient.getMinutes();
+        char ntpValue[10];
+        sprintf(ntpValue, "%02d:%02d", currentHour, currentMinutes);
+        strcpy(SensorDataStruct.ntpValue, ntpValue);
     }else{
         ntpClient.update();
     }
     int pwmCount = 0;
-    if (StoreDataStruct.isEnableLedSunTime == 0){
+    if (StoreDataStruct.led.isEnableSunTime == 0){
         for (int i = 0; i < LED_Channel; i++)
         {
-            int currentBrightness = constrain(StoreDataStruct.rgbwu[i], 0, 100);
+            int currentBrightness = constrain(StoreDataStruct.led.rgbwuv[i], 0, 100);
             setPWMPercentage(i,currentBrightness);
             pwmCount = pwmCount + currentBrightness;
             //映射到传感器数据上
@@ -59,7 +64,6 @@ void ledProgress()
                 ESP_LOGI("LedProgress", "等待 NTP 时钟....");
                 return;
             }
-            currentHour = ntpClient.getHours();
         }
         int nextHour = (currentHour + 1) % 24;
         ESP_LOGI("LedProgress", "当前Hour:%s", String(currentHour));
@@ -68,8 +72,8 @@ void ledProgress()
         int endValues[LED_Channel];
         for (int i = 0; i < LED_Channel; i++)
         {
-            startValues[i] = StoreDataStruct.pwmValuesPerHour[currentHour][i];
-            endValues[i] = StoreDataStruct.pwmValuesPerHour[nextHour][i];
+            startValues[i] = StoreDataStruct.led.pwmValuesPerHour[currentHour][i];
+            endValues[i] = StoreDataStruct.led.pwmValuesPerHour[nextHour][i];
         }
         int elapsedMinutes = ntpClient.getMinutes();
         int elapsedSeconds =  ntpClient.getSeconds();
@@ -109,9 +113,9 @@ void ledProgress()
         }
     }
     //判断当前温控模式
-    if (StoreDataStruct.fanControlMode == 1)
+    if (StoreDataStruct.led.fanControlMode == 1)
     {
-        if (pwmCount > fan_start_count)
+        if (pwmCount > StoreDataStruct.led.fanStartUpValue)
         {
             int fanPwm = pwmCount / LED_Channel;
             //映射到传感器
@@ -124,8 +128,8 @@ void ledProgress()
             setPWMPercentage(5, 0);
         }
     }else{
-        SensorDataStruct.mos_b2 = StoreDataStruct.fanPowerValue;
-        setPWMPercentage(5, StoreDataStruct.fanPowerValue);
+        SensorDataStruct.mos_b2 = StoreDataStruct.led.fanPowerValue;
+        setPWMPercentage(5, StoreDataStruct.led.fanPowerValue);
     }
 }
 
@@ -138,7 +142,6 @@ void core1LedPwmTask(void *parameter)
         if (xSemaphoreTake(SemaphoreHandle, portMAX_DELAY) == pdTRUE) 
         {
             ledProgress();
-            vTaskDelay(3000 / portTICK_PERIOD_MS);
         }
     }
 }

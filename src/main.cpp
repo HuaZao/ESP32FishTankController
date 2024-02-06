@@ -94,7 +94,7 @@ void ESP_GPIO_init(void)
 
 void loop()
 {
-  vTaskDelay(1000 / portTICK_PERIOD_MS);
+  vTaskDelay(500);
   //持续发送更新信号
   xSemaphoreGive(SemaphoreHandle);
 }

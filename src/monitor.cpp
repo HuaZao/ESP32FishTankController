@@ -21,9 +21,7 @@ void monitorFishTankWaterLevel()
   {
     return;
   }
-  // Serial.println("监听补水中.......");
-  // 低于水位，打开水泵补水(无水是高电平)
-  if (digitalRead(fishTank_water_level_pin) == HIGH)
+  if (digitalRead(backupwater_pin) == LOW)
   {
     // 如果水泵尚未启动，记录启动时间
     if (pumpStartTime == 0)
@@ -37,7 +35,7 @@ void monitorFishTankWaterLevel()
     if (isAddWater == false)
     {
       isAddWater = true;
-      //   sc_send("鱼缸开始补水.....");
+      sc_send("鱼缸开始补水.....");
     }
     // 如果水泵运行时间超过超时时间，关闭水泵
     if (millis() - pumpStartTime >= pumpTimeout)
@@ -208,7 +206,6 @@ void monitorMainTask(void *arg)
       monitorWaterChange();
       // 监听故障
       monitorAlert();
-      vTaskDelay(3000 / portTICK_PERIOD_MS);
     }
   }
 }

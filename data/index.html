@@ -207,7 +207,16 @@
                         <div class="layui-input-block">
                             <div style="height: 50px; padding-top: 12px;" class="class-fan-slider" id="ID-slider-fan-input"></div>
                         </div>
-                      </div>
+                    </div>
+
+         
+                    <div class="layui-form-item" id="fanStartUp-input">
+                        <label class="layui-form-label">温控阈值</label>
+                        <div class="layui-input-inline" style="width: 200;">
+                            <input type="number" name="fanStartUpValue" lay-verify="required" class="layui-input" min="0" step="1" lay-affix="number" value="100">
+                        </div>
+                    </div>
+                    
 
                     <div class="layui-form-item" style="padding-left: 40px;">
                         <button class="layui-btn layui-btn-fluid" lay-submit
@@ -266,45 +275,66 @@
     var slider_u;
     var slider_fan;
 
-    // var jsonResponse = {
-    //     "isEnableAddWather": 1,
-    //     "addWatherTimeout":10, 
-    //     "fanPowerValue":50, 
-    //     "fanControlMode": 1,
-    //     "ledChannelCount": 3,
-    //     "isEnableWaterChanges": 1,
-    //     "isEnableSunTime": 0,
-    //     "changesWaterTiming": 0,
-    //     "pwmValuesPerHour": [
-    //         { "0": [0, 0, 0, 0, 0] },
-    //         { "1": [0, 0, 0, 0, 0] },
-    //         { "2": [0, 0, 0, 0, 0] },
-    //         { "3": [0, 0, 0, 0, 0] },
-    //         { "4": [0, 0, 0, 0, 0] },
-    //         { "5": [0, 0, 0, 0, 0] },
-    //         { "6": [0, 0, 0, 0, 0] },
-    //         { "7": [0, 0, 0, 0, 0] },
-    //         { "8": [0, 0, 0, 0, 0] },
-    //         { "9": [0, 0, 0, 0, 0] },
-    //         { "10": [20, 10, 30, 30, 30] },
-    //         { "11": [30, 30, 40, 30, 50] },
-    //         { "12": [50, 30, 100, 50, 50] },
-    //         { "13": [50, 30, 100, 100, 100] },
-    //         { "14": [50, 30, 80, 80, 80] },
-    //         { "15": [40, 30, 80, 80, 80] },
-    //         { "16": [30, 30, 60, 30, 50] },
-    //         { "17": [30, 30, 50, 30, 50] },
-    //         { "18": [30, 30, 40, 30, 50] },
-    //         { "19": [30, 30, 30, 30, 50] },
-    //         { "20": [30, 30, 30, 30, 50] },
-    //         { "21": [30, 30, 30, 30, 50] },
-    //         { "22": [10, 10, 10, 10, 10] },
-    //         { "23": [0, 0, 0, 0, 0] }
-    //     ],
-    //     "rgbwuv":[50,50,50,50,50],
-    //     pushKey: ""
-    // };
-    var jsonResponse = {};
+    var jsonResponse = {
+    "addWather":{
+        "isEnable":0,
+        "timeout":10
+    }, 
+    "waterChanges":{
+        "isEnable":0,
+        "timeout":10,
+        "count":5,
+        "clock":{
+            "hour":12,
+            "minute":0,
+            "week":0
+        }
+    },
+    "wifi":{
+        "ssid":"",
+        "psw":""
+    },
+    "mqtt":{
+        "port":1883,
+        "ip":""
+    },
+    "led":{
+        "ledChannelCount":5,
+        "isEnableSunTime":0,
+        "fanPowerValue":50,
+        "fanControlMode":1,
+        "fanStartUpValue":100,
+        "pwmValuesPerHour":[
+            {"0":[0,0,0,0,0]},
+            {"1":[0,0,0,0,0]},
+            {"2":[0,0,0,0,0]},
+            {"3":[0,0,0,0,0]},
+            {"4":[0,0,0,0,0]},
+            {"5":[0,0,0,0,0]},
+            {"6":[0,0,0,0,0]},
+            {"7":[0,0,0,0,0]},
+            {"8":[0,0,0,0,0]},
+            {"9":[10,30,50,20,30]},
+            {"10":[20,40,80,30,50]},
+            {"11":[30,60,100,80,60]},
+            {"12":[40,60,100,100,80]},
+            {"13":[50,60,100,100,80]},
+            {"14":[40,60,80,100,80]},
+            {"15":[30,60,60,80,60]},
+            {"16":[20,60,50,60,30]},
+            {"17":[10,50,50,50,30]},
+            {"18":[10,50,50,40,30]},
+            {"19":[10,50,50,40,20]},
+            {"20":[10,30,30,30,20]},
+            {"21":[10,10,10,10,0]},
+            {"22":[10,10,10,10,0]},
+            {"23":[10,10,10,10,0]}
+        ],
+        "rgbwuv":[50,50,50,50,50]
+    },
+    "pushKey":""
+};
+    // var jsonResponse = {};
     var ctx = document.getElementById('myChart').getContext('2d');
     var myChart = new Chart(ctx, {
         type: 'line',
@@ -337,7 +367,7 @@
                     onDragEnd: function (e, datasetIndex, index, value) {
                         e.target.style.cursor = 'default'
                         // espDatasets[datasetIndex].data[index] = intValue;
-                        jsonResponse.pwmValuesPerHour[index][String(index)][datasetIndex] = value;
+                        jsonResponse.led.pwmValuesPerHour[index][String(index)][datasetIndex] = value;
                         // console.log(espDatasets);
                         console.log(jsonResponse);
                     },
@@ -367,7 +397,7 @@
             { label: 'U', data: [], pointBackgroundColor: 'purple', backgroundColor: 'rgba(128, 0, 128, 0.2)', borderColor: 'purple', ...sharedOptions }
         ];
         // 遍历pwmValuesPerHour中的每个对象
-        jsonResponse.pwmValuesPerHour.forEach(entry => {
+        jsonResponse.led.pwmValuesPerHour.forEach(entry => {
             // 获取每个对象的第一个值
             const values = Object.values(entry)[0];
             // 将值添加到对应的数据集
@@ -412,8 +442,10 @@
 
     function updateLedFanModelVisibility(value) {
         if (value == true) {
+            document.getElementById('fanStartUp-input').style.display = 'block';
             document.getElementById('ID-slider-fan-input').style.display = 'none';
         } else {
+            document.getElementById('fanStartUp-input').style.display = 'none';
             document.getElementById('ID-slider-fan-input').style.display = 'block';
         }
     }
@@ -464,7 +496,7 @@
             input: true,
             theme: 'red',
             done: function(value){
-                jsonResponse.rgbwuv[0] = value;
+                jsonResponse.led.rgbwuv[0] = value;
             }
         });
 
@@ -475,7 +507,7 @@
             input: true,
             theme: 'green',
             done: function(value){
-                jsonResponse.rgbwuv[1] = value;
+                jsonResponse.led.rgbwuv[1] = value;
             }
         });
 
@@ -486,7 +518,7 @@
             input: true,
             theme: 'blue',
             done: function(value){
-                jsonResponse.rgbwuv[2] = value;
+                jsonResponse.led.rgbwuv[2] = value;
             }
         });
 
@@ -497,7 +529,7 @@
             input: true,
             theme: 'black',
             done: function(value){
-                jsonResponse.rgbwuv[3] = value;
+                jsonResponse.led.rgbwuv[3] = value;
             }
         });
 
@@ -508,7 +540,7 @@
             input: true,
             theme: 'purple',
             done: function(value){
-                jsonResponse.rgbwuv[4] = value;
+                jsonResponse.led.rgbwuv[4] = value;
             }
         })
 
@@ -519,7 +551,7 @@
             input: true,
             theme: 'black',
             done: function(value){
-                jsonResponse.fanPowerValue = value;
+                jsonResponse.led.fanPowerValue = value;
             }
         })
    
@@ -535,12 +567,12 @@
         form.on('switch(checkbox-fan-filter)', function (data) {
             var elem = data.elem;
             if(elem.checked == false){
-                jsonResponse.fanControlMode = 0;
-                slider_fan.setValue(jsonResponse.fanPowerValue);
+                jsonResponse.led.fanControlMode = 0;
+                slider_fan.setValue(jsonResponse.led.fanPowerValue);
                 console.log("关闭温控!");
             }else{
                 console.log("打开温控!");
-                jsonResponse.fanControlMode = 1;
+                jsonResponse.led.fanControlMode = 1;
             }
             updateLedFanModelVisibility(elem.checked);  
         });
@@ -548,7 +580,7 @@
 
         form.on('select(led-Channel-value)', function (data) {
             var ledMode = form.val().ledModel;
-            jsonResponse.ledChannelCount = data.value;
+            jsonResponse.led.ledChannelCount = data.value;
             if(ledMode == 0){
                 updateSliderInputsVisibility(data.value);
             }else{
@@ -560,7 +592,7 @@
             var elem = data.elem;
             var channel = form.val().ledChannel;
             updateLedControllerModelVisibility(elem.value);
-            jsonResponse.isEnableSunTime = data.value;
+            jsonResponse.led.isEnableSunTime = data.value;
             if(data.value == 0){
                 updateSliderInputsVisibility(channel);
             }else{
@@ -585,12 +617,15 @@
                 layer.msg('保存失败,请检查设备是否在线');
             };
             var body = {
-                "fanControlMode":jsonResponse.fanControlMode,
-                "fanPowerValue":jsonResponse.fanPowerValue,
-                "ledChannelCount":jsonResponse.ledChannelCount,
-                "isEnableSunTime":jsonResponse.isEnableSunTime,
-                "pwmValuesPerHour":jsonResponse.pwmValuesPerHour,
-                "rgbwuv":jsonResponse.rgbwuv
+                "led":{
+                    "fanControlMode":jsonResponse.led.fanControlMode,
+                    "fanPowerValue":jsonResponse.led.fanPowerValue,
+                    "ledChannelCount":jsonResponse.led.ledChannelCount,
+                    "isEnableSunTime":jsonResponse.led.isEnableSunTime,
+                    "pwmValuesPerHour":jsonResponse.led.pwmValuesPerHour,
+                    "fanStartUpValue":parseInt(data.field.fanStartUpValue),
+                    "rgbwuv":jsonResponse.led.rgbwuv
+                }
             };
             var jsonData = JSON.stringify(body);
             console.log(jsonData);
@@ -611,28 +646,29 @@
                 // 填充表单        
                 var form = layui.form;
                 layui.form.val("ledForm", {
-                    "ledChannel": jsonResponse.ledChannelCount,
-                    "ledModel": jsonResponse.isEnableSunTime,
-                    "fanAutoSwitch": jsonResponse.fanControlMode
+                    "ledChannel": jsonResponse.led.ledChannelCount,
+                    "ledModel": jsonResponse.led.isEnableSunTime,
+                    "fanAutoSwitch": jsonResponse.led.fanControlMode,
+                    "fanStartUpValue": jsonResponse.led.fanStartUpValue
                 });
                 layui.form.val("addWatherForm", {
-                    "addWatherSwitch": jsonResponse.isEnableAddWather,
-                    "addWatherTimeout": jsonResponse.addWatherTimeout
+                    "addWatherSwitch": jsonResponse.addWather.isEnable,
+                    "addWatherTimeout": jsonResponse.addWather.timeout
                 });
 
-                updateLedFanModelVisibility(jsonResponse.fanControlMode)
-                updateLedControllerModelVisibility(jsonResponse.isEnableSunTime);
-                if (jsonResponse.isEnableSunTime == 1) {
-                    updateMyChartVisibility(jsonResponse.ledChannelCount);
+                updateLedFanModelVisibility(jsonResponse.led.fanControlMode)
+                updateLedControllerModelVisibility(jsonResponse.led.isEnableSunTime);
+                if (jsonResponse.led.isEnableSunTime == 1) {
+                    updateMyChartVisibility(jsonResponse.led.ledChannelCount);
                 } else {
-                    updateSliderInputsVisibility(jsonResponse.ledChannelCount)
+                    updateSliderInputsVisibility(jsonResponse.led.ledChannelCount)
                 };
-                slider_fan.setValue(jsonResponse.fanPowerValue)
-                slider_r.setValue(jsonResponse.rgbwuv[0]);
-                slider_g.setValue(jsonResponse.rgbwuv[1]);
-                slider_b.setValue(jsonResponse.rgbwuv[2]);
-                slider_w.setValue(jsonResponse.rgbwuv[3]);
-                slider_u.setValue(jsonResponse.rgbwuv[4]);
+                slider_fan.setValue(jsonResponse.led.fanPowerValue)
+                slider_r.setValue(jsonResponse.led.rgbwuv[0]);
+                slider_g.setValue(jsonResponse.led.rgbwuv[1]);
+                slider_b.setValue(jsonResponse.led.rgbwuv[2]);
+                slider_w.setValue(jsonResponse.led.rgbwuv[3]);
+                slider_u.setValue(jsonResponse.led.rgbwuv[4]);
                 layer.close(loadIndex)
             } else {
                 layer.close(loadIndex)
@@ -656,7 +692,6 @@
         requestSensorData();
         //开启定时刷新
         setInterval(requestSensorData, 5000);
-        var ntpTimeValue = 0;
 
         function requestSensorData() {
             $.ajax({
@@ -664,10 +699,6 @@
                 type: 'GET',
                 success: function (data) {
                     updateSensorData(data);
-                    if (ntpTimeValue == 0) {
-                        ntpTimeValue = data.ntpValue;
-                        setInterval(updateClock, 1000);
-                    }
                 },
                 error: function () {
                     layer.msg("数据请求失败,请检查设备状态!");
@@ -677,25 +708,17 @@
         // 封装更新页面传感器数据的函数
         function updateSensorData(data) {
             document.getElementById("card-temperature").innerHTML = data.temperatureData + "°";
-            document.getElementById("card-voltage").innerHTML = data.voltage;
-            document.getElementById("card-current").innerHTML = data.current;
+            document.getElementById("card-voltage").innerHTML = data.voltage + "V";
+            document.getElementById("card-current").innerHTML = data.current + "A";
             document.getElementById("card-led-value").innerHTML = data.ledPwmValues;
             document.getElementById("card-win-lv").innerHTML = data.waterLevelIn == 0 ? "低水位" : "正常";
             document.getElementById("card-mos1-value").innerHTML = data.mos_b1 == 0 ? "关闭" : "打开";
-            document.getElementById("card-mos2-value").innerHTML = data.mos_b2 == 0 ? "关闭" : "打开";
-            document.getElementById("card-mos3-value").innerHTML = data.mos_b3 == 0 ? "关闭" : "打开";
-            document.getElementById("card-led-mode").innerHTML = jsonResponse.isEnableSunTime == 0 ? "手动模式" : "日出日落";
-            document.getElementById("card-fan-power").innerHTML = jsonResponse.fanPowerValue;
+            document.getElementById("card-mos2-value").innerHTML = data.mos_b2 == 0 ? "关闭" : data.mos_b2 + "%";
+            document.getElementById("card-mos3-value").innerHTML = data.mos_b3 == 0 ? "关闭" : data.mos_b3 + "%";
+            document.getElementById("card-led-mode").innerHTML = jsonResponse.led.isEnableSunTime == 0 ? "手动模式" : "日出日落";
+            document.getElementById("card-fan-power").innerHTML = jsonResponse.led.fanPowerValue;
+            document.getElementById("card-ntp").innerHTML = data.ntpValue;
             console.log(data);
-        }
-        // 封装更新页面时钟的函数
-        function updateClock() {
-            var clockElement = document.getElementById("card-ntp");
-            var currentTime = new Date(ntpTimeValue * 1000);
-            currentTime.setSeconds(currentTime.getSeconds() + 1);
-            var util = layui.util;
-            var result = util.toDateString(currentTime);
-            clockElement.innerHTML = result;
         }
 
     });
